@@ -22,6 +22,8 @@
     --wa: #25d366;
     --radius: 12px;
     --radius-lg: 20px;
+    --sale-green: #155724;
+    --sale-bg: #d4edda;
   }
 
   html { font-size: 16px; }
@@ -179,6 +181,34 @@
     border-bottom: 1px solid var(--line);
   }
 
+  /* Selector de modalidades grandes y claros */
+  .mode-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .mode-btn {
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    cursor: pointer;
+    background: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all .15s;
+  }
+  .mode-btn:hover { border-color: #aaa; }
+  .mode-btn.on { border-color: var(--accent); background: var(--accent-light); }
+  .mode-btn-title { font-size: 0.9rem; font-weight: 500; color: var(--black); }
+  .mode-btn-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .mode-indicator { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; display:flex; align-items:center; justify-content:center; }
+  .mode-btn.on .mode-indicator { border-color: var(--accent); background: var(--accent); }
+  .mode-btn.on .mode-indicator::after { content:''; width: 6px; height: 6px; background:#fff; border-radius:50%; }
+
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
 
   .chip {
@@ -231,6 +261,27 @@
     color: var(--muted);
     padding: 6px 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  /* Alerta de ahorro */
+  .discount-badge {
+    background: var(--sale-bg);
+    color: var(--sale-green);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.95; }
+    50% { opacity: 1; }
+    100% { opacity: 0.95; }
   }
 
   .sum-total {
@@ -343,16 +394,26 @@
     </div>
 
     <div id="det-cumple" class="hidden">
-      <p class="section-heading">Elige tu Combo de Cumpleaños</p>
+      <p class="section-heading">1. Configura tu Modalidad de Servicio</p>
       
-      <div class="field-row" style="margin-bottom:1rem">
-        <span class="field-label">Modalidad</span>
-        <div class="chips">
-          <div class="chip on" id="mode-foto" onclick="setMode('foto')">Foto (1 cám)</div>
-          <div class="chip" id="mode-fotovideo" onclick="setMode('fotovideo')">Foto + Video (2 cám)</div>
+      <div class="mode-container">
+        <div class="mode-btn on" id="m-btn-foto" onclick="setMode('foto')">
+          <div>
+            <div class="mode-btn-title">📷 Solo Fotografía Profesional</div>
+            <div class="mode-btn-sub">1 cámara digital · Cobertura completa de capturas fijas</div>
+          </div>
+          <div class="mode-indicator"></div>
+        </div>
+        <div class="mode-btn" id="m-btn-fotovideo" onclick="setMode('fotovideo')">
+          <div>
+            <div class="mode-btn-title">🎥 Combo Completo: Foto + Video</div>
+            <div class="mode-btn-sub">2 cámaras en acción · Captura de fotos y edición de video del evento</div>
+          </div>
+          <div class="mode-indicator"></div>
         </div>
       </div>
 
+      <p class="section-heading">2. Elige tu Combo de Cobertura</p>
       <div class="grid-2" style="gap:12px">
         <div class="opt" id="combo-express" onclick="setCombo('express')">
           <div class="opt-name">Combo Express</div>
@@ -360,24 +421,24 @@
           <div class="opt-price" id="p-combo1">$70 / hora</div>
         </div>
         <div class="opt" id="combo-3" onclick="setCombo('standard')">
-          <div class="badge-rec">RECOMENDADO</div>
-          <div class="opt-name">Combo Estándar</div>
+          <div class="badge-rec">MEJOR VALOR</div>
+          <div class="opt-name">Combo Estándar ⭐</div>
           <div class="opt-desc">3 Horas completas de evento</div>
           <div class="opt-price" id="p-combo3">$50 / hora</div>
         </div>
         <div class="opt" id="combo-custom" onclick="setCombo('custom')" style="grid-column: span 2;">
-          <div class="opt-name">Combo Premium (Personalizado)</div>
-          <div class="opt-desc">Eventos grandes (desde 4 a 12 horas)</div>
+          <div class="opt-name">Combo Premium (Larga Duración)</div>
+          <div class="opt-desc">Para fiestas grandes (de 4 a 12 horas)</div>
           <div class="opt-price" id="p-combo-custom">$50 / hora</div>
         </div>
       </div>
 
       <div id="express-hours-selector" class="hidden" style="margin-top:20px; background:var(--surface); border: 1px dashed var(--line); padding:15px; border-radius:12px;">
         <div class="field-row" style="border:none; padding:0;">
-          <span class="field-label">¿Cuántas horas?</span>
+          <span class="field-label">Duración Express</span>
           <div class="chips">
-            <div class="chip on" id="exp-h1" onclick="setExpressHours(1)">1 Hora</div>
-            <div class="chip" id="exp-h2" onclick="setExpressHours(2)">2 Horas</div>
+            <div class="chip on" id="exp-h1" onclick="setExpressHours(1)">1 Hora de cobertura</div>
+            <div class="chip" id="exp-h2" onclick="setExpressHours(2)">2 Horas de cobertura</div>
           </div>
         </div>
       </div>
@@ -392,13 +453,16 @@
         </div>
       </div>
 
-      <div class="summary-box" id="cumple-sum"></div>
+      <div class="summary-box">
+        <div id="discount-area"></div> <div id="cumple-sum"></div>
+      </div>
+
       <button class="btn btn-primary" onclick="goStep(3)" style="margin-top:1.5rem">Continuar →</button>
       <button class="btn btn-ghost" onclick="pickService('social')" style="margin-top:0.5rem">← Volver</button>
     </div>
 
     <div id="det-generic" class="hidden">
-      <p class="section-heading">Servicio en configuración...</p>
+      <p class="section-heading">Servicio en construcción...</p>
       <button class="btn btn-ghost" onclick="goStep(1)">← Volver al inicio</button>
     </div>
 
@@ -433,15 +497,15 @@ const state = {
   step: 1,
   service: '',
   subtype: '',
-  mode: 'foto',      // foto, fotovideo
-  comboType: 'standard', // express, standard, custom
-  expressHrs: 1,     // 1 o 2 horas internas del express
-  customHrs: 4,      // 4 a 12 del slider
+  mode: 'foto', 
+  comboType: 'standard', 
+  expressHrs: 1,     
+  customHrs: 4,      
   price: 0,
   details: ''
 };
 
-// NUEVA MATRIZ DE PRECIOS POR HORA SEGÚN TUS NUEVAS TARIFAS
+// MATRIZ DE PRECIOS POR HORA
 const RATES = {
   foto: { 1: 70, 2: 60, base: 50 },
   fotovideo: { 1: 90, 2: 80, base: 70 }
@@ -478,8 +542,8 @@ function pickSubtype(t) {
 
 function setMode(m) {
   state.mode = m;
-  document.getElementById('mode-foto').classList.toggle('on', m === 'foto');
-  document.getElementById('mode-fotovideo').classList.toggle('on', m === 'fotovideo');
+  document.getElementById('m-btn-foto').classList.toggle('on', m === 'foto');
+  document.getElementById('m-btn-fotovideo').classList.toggle('on', m === 'fotovideo');
   updateCumpleUI();
 }
 
@@ -489,7 +553,6 @@ function setCombo(type) {
   document.getElementById('combo-3').classList.toggle('selected', type === 'standard');
   document.getElementById('combo-custom').classList.toggle('selected', type === 'custom');
   
-  // Mostrar u ocultar selectores extra según la tarjeta
   document.getElementById('express-hours-selector').classList.toggle('hidden', type !== 'express');
   document.getElementById('custom-slider').classList.toggle('hidden', type !== 'custom');
   
@@ -510,12 +573,12 @@ function updateRange(v) {
 }
 
 function updateCumpleUI() {
-  // 1. Mostrar textos de precios POR HORA en los botones (en verde)
-  document.getElementById('p-combo1').textContent = `$${RATES[state.mode][state.expressHrs]} / hora`;
+  // Ajustar textos dinámicos de los precios por hora dentro de las opciones
+  const currentExpressRate = RATES[state.mode][state.expressHrs];
+  document.getElementById('p-combo1').textContent = `$${currentExpressRate} / hora`;
   document.getElementById('p-combo3').textContent = `$${RATES[state.mode].base} / hora`;
   document.getElementById('p-combo-custom').textContent = `$${RATES[state.mode].base} / hora`;
 
-  // 2. Calcular los totales tras bambalinas para la tarjeta resumen
   let hrs = 3;
   let ratePorHora = RATES[state.mode].base;
 
@@ -530,14 +593,34 @@ function updateCumpleUI() {
     ratePorHora = RATES[state.mode].base;
   }
 
-  let totalCalculado = hrs * ratePorHora;
-  state.price = totalCalculado;
-  state.details = `Cumpleaños: ${(state.mode === 'foto' ? 'Fotografía' : 'Foto + Video')} x ${hrs} horas.`;
+  // 1. Calcular Costo Real vs Costo Base
+  const totalCalculado = hrs * ratePorHora;
+  const precioBaseUnaHora = RATES[state.mode][1]; // Tarifas base sueltas ($70 o $90)
+  const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
+  const ahorroTotal = costoSiFueranHorasSueltas - totalCalculado;
 
-  // 3. Renderizar cuadro resumen informativo
+  state.price = totalCalculado;
+  
+  const nombreModalidad = state.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video';
+  state.details = `Cumpleaños: ${nombreModalidad} por un total de ${hrs} horas.`;
+
+  // 2. Renderizar el cartel de ahorro si aplica
+  const discountArea = document.getElementById('discount-area');
+  if (ahorroTotal > 0) {
+    discountArea.innerHTML = `
+      <div class="discount-badge">
+        🏷️ ¡Excelente elección! Estás ahorrando <strong>$${ahorroTotal} USD</strong> con esta tarifa especial por volumen.
+      </div>
+    `;
+  } else {
+    discountArea.innerHTML = '';
+  }
+
+  // 3. Renderizar el desglose de precios tradicional
   document.getElementById('cumple-sum').innerHTML = `
-    <div class="sum-row"><span>Precio por hora contratada</span><span>$${ratePorHora} / h</span></div>
-    <div class="sum-row"><span>Tiempo total de cobertura</span><span>${hrs} horas</span></div>
+    <div class="sum-row"><span>Modalidad elegida</span><strong>${nombreModalidad}</strong></div>
+    <div class="sum-row"><span>Precio especial por hora</span><span>$${ratePorHora} / h</span></div>
+    <div class="sum-row"><span>Tiempo de cobertura</span><span>${hrs} ${hrs === 1 ? 'hora' : 'horas'}</span></div>
     <div class="sum-row sum-total"><span>Total Presupuesto</span><span class="amount">$${totalCalculado}</span></div>
   `;
 }
@@ -564,7 +647,7 @@ function guardarDatos() {
 
 function sendWA() {
   const name = document.getElementById('inp-nombre').value;
-  const msg = `¡Hola LemonFilmz! Soy ${name}. Acabo de cotizar un evento: ${state.details} por un total de $${state.price}. ¿Tienen disponibilidad?`;
+  const msg = `¡Hola LemonFilmz! Soy ${name}. Acabo de cotizar un evento de Cumpleaños: ${state.details} por un valor total de $${state.price}. ¿Tienen disponibilidad en la agenda?`;
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 </script>
