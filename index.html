@@ -181,7 +181,6 @@
     border-bottom: 1px solid var(--line);
   }
 
-  /* Selector de modalidades grandes y claros */
   .mode-container {
     display: flex;
     flex-direction: column;
@@ -263,7 +262,6 @@
     border-bottom: 1px solid var(--line);
   }
 
-  /* Alerta de ahorro */
   .discount-badge {
     background: var(--sale-bg);
     color: var(--sale-green);
@@ -275,13 +273,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0% { opacity: 0.95; }
-    50% { opacity: 1; }
-    100% { opacity: 0.95; }
   }
 
   .sum-total {
@@ -297,15 +288,67 @@
     color: var(--accent);
   }
 
-  input[type=text], input[type=email], textarea {
+  /* Formulario y contenedor de teléfono ecuatoriano */
+  .input-label-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  input[type=text], input[type=email], input[type=date], textarea {
     width: 100%;
     padding: 10px 14px;
     border: 1.5px solid var(--line);
     border-radius: var(--radius);
     font-family: 'Instrument Sans', sans-serif;
     font-size: 0.875rem;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     outline: none;
+    background: var(--white);
+  }
+
+  .tel-container {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--white);
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+
+  .tel-prefix {
+    background: var(--surface);
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink);
+    border-right: 1px solid var(--line);
+  }
+
+  .tel-container input {
+    border: none;
+    margin-bottom: 0;
+    padding: 10px 14px;
+    width: 100%;
+    outline: none;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.875rem;
+  }
+
+  .geo-notice {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+    margin: 1rem 0 0.5rem;
+    padding: 10px 12px;
+    background: #fffcee;
+    border: 1px solid #fbe6a2;
+    border-radius: 8px;
+    display: flex;
+    gap: 6px;
   }
 
   .btn {
@@ -381,7 +424,6 @@
   </div>
 
   <div id="step2" class="hidden">
-    
     <div id="sub-social" class="hidden">
       <p class="section-heading">Selecciona tu evento:</p>
       <div class="grid-2">
@@ -395,7 +437,6 @@
 
     <div id="det-cumple" class="hidden">
       <p class="section-heading">1. Configura tu Modalidad de Servicio</p>
-      
       <div class="mode-container">
         <div class="mode-btn on" id="m-btn-foto" onclick="setMode('foto')">
           <div>
@@ -454,7 +495,8 @@
       </div>
 
       <div class="summary-box">
-        <div id="discount-area"></div> <div id="cumple-sum"></div>
+        <div id="discount-area"></div>
+        <div id="cumple-sum"></div>
       </div>
 
       <button class="btn btn-primary" onclick="goStep(3)" style="margin-top:1.5rem">Continuar →</button>
@@ -465,18 +507,37 @@
       <p class="section-heading">Servicio en construcción...</p>
       <button class="btn btn-ghost" onclick="goStep(1)">← Volver al inicio</button>
     </div>
-
   </div>
 
   <div id="step3" class="hidden">
     <p class="section-heading">Tus datos de contacto</p>
-    <input type="text" id="inp-nombre" placeholder="Nombre completo">
-    <input type="text" id="inp-evento" placeholder="¿Qué celebramos? (Ej: Cumpleaños de Luis)">
-    <input type="text" id="inp-fecha" placeholder="Fecha del evento">
-    <input type="email" id="inp-email" placeholder="Tu correo electrónico">
-    <input type="text" id="inp-tel" placeholder="WhatsApp">
-    <textarea id="inp-nota" placeholder="Notas adicionales (Opcional)"></textarea>
-    <button class="btn btn-primary" onclick="goStep(4)">Ver cotización final →</button>
+    
+    <label class="input-label-text">Nombre completo</label>
+    <input type="text" id="inp-nombre" placeholder="Ej: Stalyn García">
+    
+    <label class="input-label-text">¿Qué celebramos?</label>
+    <input type="text" id="inp-evento" placeholder="Ej: Cumpleaños de Luis">
+    
+    <label class="input-label-text">Fecha del evento</label>
+    <input type="date" id="inp-fecha">
+    
+    <label class="input-label-text">Correo electrónico</label>
+    <input type="email" id="inp-email" placeholder="ejemplo@correo.com">
+    
+    <label class="input-label-text">Número de WhatsApp</label>
+    <div class="tel-container">
+      <span class="tel-prefix">🇪🇨 +593</span>
+      <input type="text" id="inp-tel" placeholder="995007148">
+    </div>
+    
+    <label class="input-label-text">Locación y Notas adicionales</label>
+    <textarea id="inp-nota" placeholder="Por favor, redacte aquí dónde se llevará a cabo el evento (Local, casa, dirección) o cualquier requerimiento extra..."></textarea>
+    
+    <div class="geo-notice">
+      📍 <span><strong>Nota importante:</strong> Las tarifas mostradas aplican exclusivamente dentro de la ciudad de <strong>Guayaquil</strong>. Eventos en otras ciudades o provincias estarán sujetos a variaciones y recargos por viáticos/movilización.</span>
+    </div>
+
+    <button class="btn btn-primary" onclick="goStep(4)" style="margin-top: 1rem;">Ver cotización final →</button>
     <button class="btn btn-ghost" onclick="goStep(2)">← Volver</button>
   </div>
 
@@ -502,10 +563,10 @@ const state = {
   expressHrs: 1,     
   customHrs: 4,      
   price: 0,
-  details: ''
+  details: '',
+  exactHrs: 3
 };
 
-// MATRIZ DE PRECIOS POR HORA
 const RATES = {
   foto: { 1: 70, 2: 60, base: 50 },
   fotovideo: { 1: 90, 2: 80, base: 70 }
@@ -573,7 +634,6 @@ function updateRange(v) {
 }
 
 function updateCumpleUI() {
-  // Ajustar textos dinámicos de los precios por hora dentro de las opciones
   const currentExpressRate = RATES[state.mode][state.expressHrs];
   document.getElementById('p-combo1').textContent = `$${currentExpressRate} / hora`;
   document.getElementById('p-combo3').textContent = `$${RATES[state.mode].base} / hora`;
@@ -593,18 +653,16 @@ function updateCumpleUI() {
     ratePorHora = RATES[state.mode].base;
   }
 
-  // 1. Calcular Costo Real vs Costo Base
+  state.exactHrs = hrs;
   const totalCalculado = hrs * ratePorHora;
-  const precioBaseUnaHora = RATES[state.mode][1]; // Tarifas base sueltas ($70 o $90)
+  const precioBaseUnaHora = RATES[state.mode][1]; 
   const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
   const ahorroTotal = costoSiFueranHorasSueltas - totalCalculado;
 
   state.price = totalCalculado;
-  
   const nombreModalidad = state.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video';
-  state.details = `Cumpleaños: ${nombreModalidad} por un total de ${hrs} horas.`;
+  state.details = `Cumpleaños: ${nombreModalidad} x ${hrs} horas.`;
 
-  // 2. Renderizar el cartel de ahorro si aplica
   const discountArea = document.getElementById('discount-area');
   if (ahorroTotal > 0) {
     discountArea.innerHTML = `
@@ -616,7 +674,6 @@ function updateCumpleUI() {
     discountArea.innerHTML = '';
   }
 
-  // 3. Renderizar el desglose de precios tradicional
   document.getElementById('cumple-sum').innerHTML = `
     <div class="sum-row"><span>Modalidad elegida</span><strong>${nombreModalidad}</strong></div>
     <div class="sum-row"><span>Precio especial por hora</span><span>$${ratePorHora} / h</span></div>
@@ -626,20 +683,27 @@ function updateCumpleUI() {
 }
 
 function renderFinal() {
+  const f_fecha = document.getElementById('inp-fecha').value || 'Por definir';
   document.getElementById('final-summary').innerHTML = `
     <div class="sum-row"><span>Servicio</span><span>${state.details}</span></div>
+    <div class="sum-row"><span>Fecha seleccionada</span><strong>${f_fecha}</strong></div>
     <div class="sum-row sum-total"><span>Inversión</span><span class="amount">$${state.price}</span></div>
   `;
   guardarDatos();
 }
 
 function guardarDatos() {
+  let userTel = document.getElementById('inp-tel').value.replace(/\s+/g, '');
+  if(userTel.startsWith('0')) userTel = userTel.substring(1);
+
   const payload = {
     nombre: document.getElementById('inp-nombre').value,
     evento: document.getElementById('inp-evento').value,
+    fecha: document.getElementById('inp-fecha').value,
     email: document.getElementById('inp-email').value,
-    telefono: document.getElementById('inp-tel').value,
+    telefono: '+593' + userTel,
     detalle: state.details,
+    nota: document.getElementById('inp-nota').value,
     total: state.price
   };
   fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -647,7 +711,12 @@ function guardarDatos() {
 
 function sendWA() {
   const name = document.getElementById('inp-nombre').value;
-  const msg = `¡Hola LemonFilmz! Soy ${name}. Acabo de cotizar un evento de Cumpleaños: ${state.details} por un valor total de $${state.price}. ¿Tienen disponibilidad en la agenda?`;
+  const eventName = document.getElementById('inp-evento').value;
+  const eventDate = document.getElementById('inp-fecha').value;
+  const eventLocation = document.getElementById('inp-nota').value;
+
+  const msg = `¡Hola LemonFilmz! Soy ${name}.\n\nAcabo de realizar una cotización para un evento:\n📌 *Evento:* ${eventName}\n📅 *Fecha:* ${eventDate}\n⏱️ *Servicio:* ${state.details}\n📍 *Ubicación/Notas:* ${eventLocation}\n\n💰 *Total Estimado:* $${state.price} USD.\n\n¿Tienen disponibilidad en la agenda?`;
+  
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 </script>
