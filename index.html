@@ -696,66 +696,118 @@ function sendWA(actionType) {
 }
 
 // FUNCIÓN PARA GENERAR Y DESCARGAR EL PDF CON ESTILO LIMPIO
+// REEMPLAZA ÚNICAMENTE LA FUNCIÓN downloadPDF() POR ESTA NUEVA VERSIÓN
 function downloadPDF() {
   const name = document.getElementById('inp-nombre').value || 'Cliente';
   const eventName = document.getElementById('inp-evento').value || 'Evento';
   const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
   const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil';
   
+  // LÓGICA DE PRECIOS: Calcular subtotal real (precio unitario de 1h x cantidad de horas)
+  const precioBaseUnaHora = RATES[state.mode][1]; 
+  const subTotalOriginal = state.exactHrs * precioBaseUnaHora;
+  const ahorroTotal = subTotalOriginal - state.price;
+
   const element = document.createElement('div');
-  element.style.padding = '40px';
+  element.style.width = '210mm';
+  element.style.minHeight = '297mm';
+  element.style.padding = '0';
+  element.style.margin = '0';
   element.style.fontFamily = "'Instrument Sans', sans-serif";
   element.style.color = '#1e1e1c';
-  element.style.backgroundColor = '#ffffff';
+  element.style.backgroundColor = '#fcfcf9';
+  element.style.position = 'relative';
+  element.style.boxSizing = 'border-box';
 
   element.innerHTML = `
-    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e4e4de; padding-bottom: 20px;">
-      <h1 style="font-family: 'Fraunces', serif; font-size: 2.5rem; margin: 0; font-weight: 300;">Lemon<em style="font-style: italic; color: #2a6b4a;">Filmz</em></h1>
-      <p style="font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: #a8a8a2; margin-top: 5px;">Fotografía & Videografía · Ecuador</p>
+    <div style="background-color: #71cb49; height: 160px; border-radius: 0 0 100% 0 / 0 0 40% 0; padding: 30px 40px; display: flex; justify-content: space-between; align-items: flex-start; box-sizing: border-box;">
+      <div style="color: #ffffff; margin-top: 10px;">
+        <p style="font-size: 0.95rem; margin: 0; font-weight: 400; opacity: 0.9;">Cotizacion para</p>
+        <h1 style="font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: bold; margin: 2px 0 5px 0; color: #ffffff; letter-spacing: -0.02em;">${eventName}</h1>
+        <p style="font-size: 0.85rem; margin: 0; opacity: 0.95; font-weight: 500;">Guayaquil - Ecuador</p>
+        <p style="font-size: 0.85rem; margin: 3px 0 0 0; font-weight: bold;">Evento: ${eventDate}</p>
+      </div>
+      <div style="text-align: right; margin-top: 10px;">
+        <div style="font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: bold; color: #ffffff; border: 2px solid #ffffff; padding: 4px 15px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em;">
+          LemonFilm-Z
+        </div>
+      </div>
     </div>
-    
-    <h2 style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 20px; color: #0f0f0e;">Presupuesto de Servicio</h2>
-    
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 0.9rem;">
-      <tr style="border-bottom: 1px solid #e4e4de;">
-        <td style="padding: 10px 0; color: #6b6b66; width: 35%;">Cliente:</td>
-        <td style="padding: 10px 0; font-weight: 500;">${name}</td>
-      </tr>
-      <tr style="border-bottom: 1px solid #e4e4de;">
-        <td style="padding: 10px 0; color: #6b6b66;">Motivo / Evento:</td>
-        <td style="padding: 10px 0; font-weight: 500;">${eventName}</td>
-      </tr>
-      <tr style="border-bottom: 1px solid #e4e4de;">
-        <td style="padding: 10px 0; color: #6b6b66;">Fecha Planificada:</td>
-        <td style="padding: 10px 0; font-weight: 500;">${eventDate}</td>
-      </tr>
-      <tr style="border-bottom: 1px solid #e4e4de;">
-        <td style="padding: 10px 0; color: #6b6b66;">Ubicación / Notas:</td>
-        <td style="padding: 10px 0; font-weight: 500;">${eventLocation}</td>
-      </tr>
-      <tr style="border-bottom: 1px solid #e4e4de;">
-        <td style="padding: 10px 0; color: #6b6b66;">Detalle de Cobertura:</td>
-        <td style="padding: 10px 0; font-weight: 500;">${state.details}</td>
-      </tr>
-    </table>
-    
-    <div style="background: #f7f7f4; border: 1px solid #e4e4de; border-radius: 12px; padding: 20px; text-align: right; margin-top: 20px;">
-      <span style="font-size: 1rem; color: #0f0f0e; font-weight: 500; display: block; margin-bottom: 5px;">Inversión Total Estimada</span>
-      <span style="font-family: 'Fraunces', serif; font-size: 2.2rem; color: #2a6b4a; font-weight: bold;">$${state.price} USD</span>
-    </div>
-    
-    <div style="margin-top: 40px; font-size: 0.75rem; color: #6b6b66; line-height: 1.5; border-top: 1px dashed #e4e4de; padding-top: 15px;">
-      <p>* Las tarifas mostradas aplican exclusivamente dentro de la ciudad de Guayaquil. Eventos fuera del perímetro urbano o en otras provincias están sujetos a recargos de movilización y viáticos.</p>
-      <p style="margin-top: 5px;">* Presupuesto válido por 15 días a partir de la fecha de generación.</p>
+
+    <div style="padding: 40px 50px; box-sizing: border-box;">
+      
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 50px; font-size: 0.88rem; line-height: 1.5;">
+        <thead>
+          <tr style="color: #2a6b4a; font-weight: bold; text-align: left;">
+            <th style="padding-bottom: 15px; width: 60%; font-weight: bold;">Descripcion</th>
+            <th style="padding-bottom: 15px; width: 20%; text-align: center; font-weight: bold;">Cantidad</th>
+            <th style="padding-bottom: 15px; width: 20%; text-align: right; font-weight: bold;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding-top: 10px; vertical-align: top;">
+              <strong style="color: #0f0f0e; font-size: 0.95rem; display: block; margin-bottom: 5px;">Cobertura Cobertura ${state.exactHrs} horas</strong>
+              <span style="color: #6b6b66; display: block; margin-bottom: 12px; font-weight: 500;">Servicio: ${state.mode === 'foto' ? 'Solo Fotografía Profesional' : 'Combo Completo (Foto + Video)'}</span>
+              <div style="color: #1e1e1c; font-size: 0.85rem; padding-right: 20px;">
+                ${INCLUSIONS[state.mode].map(inc => `<p style="margin-bottom: 8px;">• ${inc.replace(/<\/?strong>/g, '')}</p>`).join('')}
+                ${eventLocation ? `<p style="margin-top: 12px; color: #6b6b66; font-style: italic;"><strong>Nota de Locación:</strong> ${eventLocation}</p>` : ''}
+              </div>
+            </td>
+            <td style="padding-top: 10px; text-align: center; vertical-align: top; font-weight: 500; color: #0f0f0e;">
+              ${state.exactHrs} ${state.exactHrs === 1 ? 'hora' : 'horas'}
+            </td>
+            <td style="padding-top: 10px; text-align: right; vertical-align: top; font-weight: bold; color: #0f0f0e; font-size: 0.95rem;">
+              $${subTotalOriginal.toFixed(2)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 40px;">
+        
+        <div style="width: 50%; font-size: 0.82rem; color: #1e1e1c; line-height: 1.7;">
+          <h3 style="color: #2a6b4a; font-size: 0.95rem; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #e4e4de; padding-bottom: 4px; width: 80%;">Datos para el pago</h3>
+          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Nombre:</span> <strong style="font-weight:500;">Stalyn Andre Garcia Yagual</strong></p>
+          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Cedula:</span> <strong style="font-weight:500;">0954255634</strong></p>
+          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Correo:</span> <strong style="font-weight:500;">Lemonfilmz.contact@gmail.com</strong></p>
+          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Celular:</span> <strong style="font-weight:500;">+593 962878800</strong></p>
+          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Tipo de cuenta:</span> <strong style="font-weight:500;">AHORROS Banco Guayaquil</strong></p>
+          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">#Cuenta:</span> <strong style="font-weight:500;">0047753290</strong></p>
+        </div>
+
+        <div style="width: 45%; font-size: 1rem; color: #0f0f0e;">
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e4e4de; align-items: center;">
+            <span style="font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: bold;">Sub- Total:</span>
+            <span style="font-weight: bold; font-size: 1.1rem;">$${subTotalOriginal.toFixed(2)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e4e4de; align-items: center; color: #c62828;">
+            <span style="font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: bold;">Descuento:</span>
+            <span style="font-weight: bold; font-size: 1.1rem;">-$${ahorroTotal.toFixed(2)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 12px 0 0 0; align-items: center;">
+            <span style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: bold;">Total:</span>
+            <span style="font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: bold; color: #2a6b4a;">$${state.price.toFixed(2)}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 80px; padding-top: 15px; border-top: 1px dashed #e4e4de; display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #a8a8a2;">
+        <div>📸 instagram: <span style="font-weight: 500; color: #6b6b66;">stalyn_lemonflu</span></div>
+        <div>Generado automáticamente via LemonFilmz App</div>
+      </div>
+
     </div>
   `;
 
+  // Opciones de renderizado perfectas para formato A4 de una sola hoja
   const opt = {
-    margin:       10,
+    margin:       0,
     filename:     `Cotizacion_LemonFilmz_${name.replace(/\s+/g, '_')}.pdf`,
     image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true },
-    jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    html2canvas:  { scale: 2, useCORS: true, logging: false },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
   html2pdf().set(opt).from(element).save();
