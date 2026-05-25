@@ -25,6 +25,7 @@
     --radius-lg: 20px;
     --sale-green: #155724;
     --sale-bg: #d4edda;
+    --pdf-accent: #89c961; /* Color verde limón para el fondo del encabezado del PDF */
   }
 
   html { font-size: 16px; }
@@ -315,6 +316,30 @@
     .logo { font-size: 1.8rem; }
     .card { padding: 1.5rem 1.25rem; }
   }
+
+  /* --- MANTENEMOS TUS ESTILOS ORIGINALES DEL PDF DEL CUAL SINO TE GUSTABA QUE SE QUITE --- */
+  .p-header-bg { position: absolute; top:0; right:0; width: 40%; height: 160px; background: var(--pdf-accent); border-radius: 0 0 0 100px; z-index: 0; }
+  .p-content { position: relative; z-index: 1; padding: 50px; }
+  .p-title-main { font-size: 32px; font-weight: bold; margin-bottom: 5px; font-family: 'Helvetica', sans-serif; }
+  .p-client { font-size: 24px; color: #444; margin-bottom: 30px; font-family: 'Helvetica', sans-serif; }
+  .p-meta { font-size: 14px; line-height: 1.6; margin-bottom: 40px; font-family: 'Helvetica', sans-serif; }
+  .p-logo-wrap { position: absolute; top: 40px; right: 50px; text-align: right; z-index: 2; }
+  .p-logo-img { height: 70px; margin-bottom: 5px; display: block; margin-left: auto; }
+  .p-brand-name { font-size: 22px; font-weight: bold; color: #fff; font-family: 'Fraunces', serif; }
+  
+  .p-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-family: 'Helvetica', sans-serif; }
+  .p-table th { text-align: left; padding: 12px 15px; border-bottom: 2px solid #eee; color: #888; font-size: 13px; text-transform: uppercase; }
+  .p-table td { padding: 20px 15px; vertical-align: top; border-bottom: 1px solid #f2f2f2; }
+  
+  .p-footer-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; margin-top: 20px; font-family: 'Helvetica', sans-serif; }
+  
+  .p-notice-box { background: #fff9e6; border: 1px dashed #f5c242; padding: 15px; border-radius: 10px; font-size: 12px; line-height: 1.6; color: #66501a; }
+  .p-notice-box strong { color: #b37d00; display: block; font-size: 13px; margin-bottom: 4px; }
+  
+  .p-math-box { text-align: right; font-family: 'Helvetica', sans-serif; }
+  .p-math-row { display: flex; justify-content: flex-end; gap: 30px; margin-bottom: 8px; font-size: 15px; color: #555; }
+  .p-discount-line { color: #2a6b4a; font-weight: 500; }
+  .p-total-big { font-size: 28px; font-weight: bold; color: #2a6b4a; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
 </style>
 </head>
 <body>
@@ -500,6 +525,60 @@
   </div>
 </div>
 
+<div id="pdf-render" style="width: 210mm; min-height: 297mm; background: #fff; position: relative; color: #333; display: none; box-sizing: border-box;">
+  <div class="p-header-bg"></div>
+  <div class="p-logo-wrap">
+    <img src="LemonfLuZ (1).png" class="p-logo-img">
+    <div class="p-brand-name">LemonFilmz</div>
+  </div>
+
+  <div class="p-content">
+    <div class="p-title-main">Cotizacion para</div>
+    <div class="p-client" id="pdf-nom">Nombre del Cliente</div>
+    
+    <div class="p-meta">
+      <strong>Guayaquil - Ecuador</strong><br>
+      Fecha del Evento: <span id="pdf-fec"></span><br>
+      Notas de Locación: <span id="pdf-inv">Por definir</span>
+    </div>
+
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th style="width: 60%">Descripcion</th>
+          <th style="text-align: center;">Cantidad</th>
+          <th style="text-align: right;">Total Base</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong id="pdf-serv-tit">Cobertura boda 8 horas</strong><br>
+            <span id="pdf-pers" style="font-size: 11px; color:#666">1 Persona (fotógrafo profesional)</span><br><br>
+            <div id="pdf-bullets" style="font-size: 11px; line-height: 1.5; color: #555; text-align: justify; padding-right: 15px;"></div>
+          </td>
+          <td style="text-align: center; font-weight: bold; font-size: 14px;" id="pdf-cant">8 horas</td>
+          <td style="text-align: right; font-weight: bold; font-size: 14px;" id="pdf-sub1">$600,00</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="p-footer-grid">
+      <div class="p-notice-box">
+        <strong>⚠️ VERIFICACIÓN DE DISPONIBILIDAD REQUERIDA</strong>
+        Esta cotización refleja los valores oficiales y promocionales de LemonFilmz para la duración seleccionada. Sin embargo, <strong>la fecha NO se encuentra reservada automáticamente</strong>.<br><br>
+        Por favor, póngase en contacto a través de WhatsApp para verificar la disponibilidad de nuestra agenda para su día. Las fechas se separan estrictamente en orden de confirmación del anticipo.
+      </div>
+
+      <div class="p-math-box">
+        <div class="p-math-row"><span>Sub-Total:</span> <span id="pdf-m-sub">$600,00</span></div>
+        <div class="p-math-row p-discount-line"><span>Descuento Especial:</span> <span id="pdf-m-desc">-$0,00</span></div>
+        <div class="p-total-big">Total Neto: <span id="pdf-m-total">$600,00</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-pzimIFn2GhiyUHVhc3hlA3kwyYQ9f-KBJE43aKV8jixrxq_uAY6pBQ/exec';
 const WA_NUMBER = '593995007148';
@@ -507,7 +586,7 @@ const WA_NUMBER = '593995007148';
 const state = {
   step: 1, service: '', subtype: '', mode: 'foto', 
   comboType: 'standard', expressHrs: 1, customHrs: 4,      
-  price: 0, details: '', exactHrs: 3
+  price: 0, details: '', exactHrs: 3, subtotal: 0, discount: 0
 };
 
 const RATES = {
@@ -623,9 +702,12 @@ function updateCumpleUI() {
   const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
   const ahorroTotal = costoSiFueranHorasSueltas - totalCalculado;
 
+  state.subtotal = costoSiFueranHorasSueltas;
+  state.discount = ahorroTotal;
   state.price = totalCalculado;
+  
   const nombreModalidad = state.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video';
-  state.details = `Cumpleaños: ${nombreModalidad} x ${hrs} horas.`;
+  state.details = `${state.subtype ? state.subtype.toUpperCase() : 'Evento'}: ${nombreModalidad} x ${hrs} horas.`;
 
   const discountArea = document.getElementById('discount-area');
   if (ahorroTotal > 0) {
@@ -677,7 +759,6 @@ function guardarDatos() {
   fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 }
 
-// ENVIAR MENSAJES PERSONALIZADOS SEGÚN EL BOTÓN SELECCIONADO
 function sendWA(actionType) {
   const name = document.getElementById('inp-nombre').value;
   const eventName = document.getElementById('inp-evento').value;
@@ -695,128 +776,50 @@ function sendWA(actionType) {
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 
-// FUNCIÓN PARA GENERAR Y DESCARGAR EL PDF CON ESTILO LIMPIO
-// REEMPLAZA ÚNICAMENTE LA FUNCIÓN downloadPDF() POR ESTA NUEVA VERSIÓN
+// NUEVA FUNCIÓN OPTIMIZADA CON TU DISEÑO ORIGINAL, EL LOGO CARGADO Y CÁLCULOS MATEMÁTICOS PERFECTOS
 function downloadPDF() {
   const name = document.getElementById('inp-nombre').value || 'Cliente';
   const eventName = document.getElementById('inp-evento').value || 'Evento';
   const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
-  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil';
+  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil (Ecuador)';
   
-  // LÓGICA DE PRECIOS: Calcular subtotal real (precio unitario de 1h x cantidad de horas)
-  const precioBaseUnaHora = RATES[state.mode][1]; 
-  const subTotalOriginal = state.exactHrs * precioBaseUnaHora;
-  const ahorroTotal = subTotalOriginal - state.price;
+  // Setear variables de texto dinámicas en el documento oculto de renderizado
+  document.getElementById('pdf-nom').textContent = name;
+  document.getElementById('pdf-fec').textContent = eventDate;
+  document.getElementById('pdf-inv').textContent = eventLocation;
+  
+  const tipoEventoLabel = state.subtype ? state.subtype.toUpperCase() : 'EVENTO';
+  const tit = `Cobertura ${tipoEventoLabel} — ${state.exactHrs} Horas`;
+  document.getElementById('pdf-serv-tit').textContent = tit;
+  document.getElementById('pdf-pers').textContent = (state.mode === 'foto') ? '1 Persona (fotógrafo profesional)' : '2 Personas (fotógrafo y videógrafo)';
+  document.getElementById('pdf-cant').textContent = state.exactHrs + (state.exactHrs === 1 ? ' hora' : ' horas');
+  
+  // Seteo matemático exacto en base al estado de la app
+  document.getElementById('pdf-sub1').textContent = `$${state.subtotal.toFixed(2)}`;
+  document.getElementById('pdf-m-sub').textContent = `$${state.subtotal.toFixed(2)}`;
+  document.getElementById('pdf-m-desc').textContent = `-$${state.discount.toFixed(2)}`;
+  document.getElementById('pdf-m-total').textContent = `$${state.price.toFixed(2)}`;
 
-  const element = document.createElement('div');
-  element.style.width = '210mm';
-  element.style.minHeight = '297mm';
-  element.style.padding = '0';
-  element.style.margin = '0';
-  element.style.fontFamily = "'Instrument Sans', sans-serif";
-  element.style.color = '#1e1e1c';
-  element.style.backgroundColor = '#fcfcf9';
-  element.style.position = 'relative';
-  element.style.boxSizing = 'border-box';
+  const bullets = (state.mode === 'foto') 
+    ? "Se realiza cobertura de fotos aprovechando cada momento relevante del evento. Se captan momentos espontáneos, protocolo formal, fotos de mesa e interacciones. Todo el material digital se entrega editado con corrección de color profesional de autor."
+    : "Se realiza cobertura híbrida en alta definición. Incluye la captura ilimitada de fotografía fija junto con la grabación de clips de video para la manufactura de un Recap Corto Dinámico (formato vertical/horizontal de alto impacto) y un video extendido cronológico.";
+  document.getElementById('pdf-bullets').textContent = bullets;
 
-  element.innerHTML = `
-    <div style="background-color: #71cb49; height: 175px; border-radius: 0 0 100% 0 / 0 0 40% 0; padding: 35px 45px; display: flex; justify-content: space-between; align-items: flex-start; box-sizing: border-box;">
-      <div style="color: #ffffff; margin-top: 5px;">
-        <p style="font-size: 0.95rem; margin: 0; font-weight: 400; opacity: 0.9;">Cotizacion para</p>
-        <h1 style="font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: bold; margin: 2px 0 5px 0; color: #ffffff; letter-spacing: -0.02em;">${eventName}</h1>
-        <p style="font-size: 0.9rem; margin: 0; opacity: 0.95; font-weight: 500;">Guayaquil - Ecuador</p>
-        <p style="font-size: 0.9rem; margin: 4px 0 0 0; font-weight: bold;">Evento: ${eventDate}</p>
-      </div>
-      
-      <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; margin-top: 5px;">
-        <div style="position: relative; width: 110px; height: 60px; margin-bottom: 5px;">
-          <svg viewBox="0 0 100 55" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
-            <path d="M 5 50 A 45 45 0 0 1 95 50 Z" stroke="white" stroke-width="4" fill="none"/>
-            <line x1="3" y1="50" x2="97" y2="50" stroke="white" stroke-width="4" />
-            <line x1="50" y1="50" x2="50" y2="10" stroke="white" stroke-width="2" />
-            <line x1="50" y1="50" x2="18" y2="28" stroke="white" stroke-width="2" />
-            <line x1="50" y1="50" x2="82" y2="28" stroke="white" stroke-width="2" />
-            <line x1="50" y1="50" x2="24" y2="42" stroke="white" stroke-width="2" />
-            <line x1="50" y1="50" x2="76" y2="42" stroke="white" stroke-width="2" />
-            <path d="M 88 50 C 88 54, 93 54, 93 50 C 93 47, 88 44, 88 44 C 88 44, 83 47, 83 50 C 83 54, 88 54, 88 50 Z" fill="white" transform="rotate(15 88 50) translate(0, 4) scale(0.7)"/>
-          </svg>
-        </div>
-        <div style="font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: bold; color: #ffffff; border: 2px solid #ffffff; padding: 3px 12px; border-radius: 3px; display: inline-block; letter-spacing: 0.03em; background-color: rgba(113, 203, 73, 0.5);">
-          LemonFilm-Z
-        </div>
-      </div>
-    </div>
-
-    <div style="padding: 50px 50px; box-sizing: border-box;">
-      
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 60px; font-size: 0.9rem; line-height: 1.6;">
-        <thead>
-          <tr style="color: #2a6b4a; font-weight: bold; text-align: left; border-bottom: 2px solid #71cb49;">
-            <th style="padding-bottom: 15px; width: 60%; font-weight: bold; font-size: 1rem;">Descripcion</th>
-            <th style="padding-bottom: 15px; width: 20%; text-align: center; font-weight: bold; font-size: 1rem;">Cantidad</th>
-            <th style="padding-bottom: 15px; width: 20%; text-align: right; font-weight: bold; font-size: 1rem;">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding-top: 20px; vertical-align: top;">
-              <strong style="color: #0f0f0e; font-size: 1.05rem; display: block; margin-bottom: 6px;">Cobertura boda ${state.exactHrs} horas</strong>
-              <span style="color: #6b6b66; display: block; margin-bottom: 15px; font-weight: 500;">Servicio: ${state.mode === 'foto' ? 'Solo Fotografía Profesional' : 'Combo Completo (Foto + Video)'}</span>
-              <div style="color: #1e1e1c; font-size: 0.88rem; padding-right: 20px;">
-                ${INCLUSIONS[state.mode].map(inc => `<p style="margin-bottom: 10px; text-indent: -12px; padding-left: 12px;">• ${inc.replace(/<\/?strong>/g, '')}</p>`).join('')}
-                ${eventLocation ? `<p style="margin-top: 15px; color: #6b6b66; font-style: italic;"><strong>Nota de Locación:</strong> ${eventLocation}</p>` : ''}
-              </div>
-            </td>
-            <td style="padding-top: 20px; text-align: center; vertical-align: top; font-weight: bold; color: #0f0f0e; font-size: 1rem;">
-              ${state.exactHrs} horas
-            </td>
-            <td style="padding-top: 20px; text-align: right; vertical-align: top; font-weight: bold; color: #0f0f0e; font-size: 1.05rem;">
-              $${subTotalOriginal.toFixed(2)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style="display: flex; justify-content: flex-end; margin-top: 50px;">
-        <div style="width: 45%; font-size: 1.1rem; color: #0f0f0e;">
-          
-          <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 2px solid #1e1e1c; align-items: center;">
-            <span style="font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: bold;">Sub- Total:</span>
-            <span style="font-weight: bold; font-size: 1.2rem;">$${subTotalOriginal.toFixed(2)}</span>
-          </div>
-          
-          <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 2px solid #1e1e1c; align-items: center;">
-            <span style="font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: bold;">Descuento:</span>
-            <span style="font-weight: bold; font-size: 1.2rem;">-$${ahorroTotal.toFixed(2)}</span>
-          </div>
-          
-          <div style="display: flex; justify-content: space-between; padding: 15px 0 0 0; align-items: center;">
-            <span style="font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: bold;">Total:</span>
-            <span style="font-family: 'Fraunces', serif; font-size: 1.9rem; font-weight: bold; color: #0f0f0e;">$${state.price.toFixed(2)}</span>
-          </div>
-          
-        </div>
-      </div>
-
-      <div style="margin-top: 120px; padding-top: 20px; border-top: 1px solid #e4e4de; text-align: center; font-size: 0.8rem; color: #a8a8a2;">
-        <div>Generado automáticamente por LemonFilmz App</div>
-      </div>
-
-    </div>
-  `;
-
-  // Opciones de PDF optimizadas
-  const opt = {
-    margin:       0,
-    filename:     `Cotizacion_LemonFilmz_${name.replace(/\s+/g, '_')}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, logging: false },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  // Renderizar y guardar usando html2pdf
+  const el = document.getElementById('pdf-render');
+  el.style.display = 'block';
+  
+  const opt = { 
+    margin: 0, 
+    filename: `Cotizacion_LemonFilmz_${name.replace(/\s+/g, '_')}.pdf`, 
+    html2canvas: { scale: 2, useCORS: true, logging: false }, 
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
   };
-
-  html2pdf().set(opt).from(element).save();
+  
+  html2pdf().set(opt).from(el).save().then(() => {
+    el.style.display = 'none';
+  });
 }
 </script>
-
 </body>
 </html>
