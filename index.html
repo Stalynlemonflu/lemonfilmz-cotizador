@@ -301,11 +301,13 @@
 
   .geo-notice { font-size: 0.78rem; color: var(--muted); line-height: 1.4; margin: 1rem 0 0.5rem; padding: 10px 12px; background: #fffcee; border: 1px solid #fbe6a2; border-radius: 8px; display: flex; gap: 6px; }
   
-  .btn { width: 100%; padding: 13px; border: none; border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; margin-top: 8px; }
+  .btn { width: 100%; padding: 13px; border: none; border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
   .btn-primary { background: var(--black); color: #fff; }
   .btn-wa { background: var(--wa); color: #fff; }
   .btn-portfolio { background: var(--white); color: var(--black); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; }
   .btn-portfolio:hover { background: var(--surface); border-color: #aaa; }
+  .btn-copy { background: #555552; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-copy:hover { background: var(--black); }
   .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
 
   .hidden { display: none !important; }
@@ -474,6 +476,7 @@
     <div class="summary-box" id="final-summary"></div>
     
     <button class="btn btn-wa" onclick="sendWA('agenda')">🚀 Agendar Evento por WhatsApp</button>
+    <button class="btn btn-copy" id="btn-copiar" onclick="copiarCotizacion()">📋 Copiar Texto de Cotización</button>
     <button class="btn btn-portfolio" onclick="sendWA('portfolio')" style="margin-top:10px;">✨ Solicitar Portafolio Completo</button>
     
     <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1.5rem">Nueva cotización</button>
@@ -504,7 +507,7 @@ const WA_NUMBER = '593995007148';
 const state = {
   step: 1, service: '', subtype: '', mode: 'foto', 
   comboType: 'standard', expressHrs: 1, customHrs: 4,      
-  price: 0, details: '', exactHrs: 3
+  price: 0, details: '', exactHrs: 3, currentInclusions: []
 };
 
 const RATES = {
@@ -514,14 +517,14 @@ const RATES = {
 
 const INCLUSIONS = {
   foto: [
-    "<strong>Fotografía ilimitada profesional:</strong> Aprovechamos cada segundo. Se registran todos los momentos espontáneos, poses creativas con tíos, primos y amigos, abrazos y risas, y no solo la típica foto familiar estructurada.",
-    "<strong>Entrega digital en alta definición:</strong> Todas las fotos del evento pasan por un proceso minucioso de revelado digital y corrección de color profesional.",
-    "<strong>Flexibilidad total:</strong> Tú dictas el ritmo del evento, el lente estará listo para capturar a quien tú desees en el momento."
+    "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante. Se registran momentos espontáneos, poses creativas con invitados, protocolo, abrazos y emociones auténticas.",
+    "<strong>Entrega digital en alta definición:</strong> Revelado minucioso de todo el material con corrección de color y estilo profesional de autor.",
+    "<strong>Flexibilidad y Cobertura Total:</strong> El lente estará listo para capturar las interacciones y dinámicas familiares al ritmo que dicte tu evento."
   ],
   fotovideo: [
-    "<strong>Todo lo incluido en fotografía:</strong> Captura ilimitada de fotos procesadas en alta resolución con cobertura total de los invitados.",
-    "<strong>Recap Cinematográfico Corto (Highlight):</strong> Un video dinámico, estético y emocionante, ideal para compartir en tus redes sociales (Instagram/TikTok).",
-    "<strong>Video Resumen Extendido Documental:</strong> Un video de larga duración que documenta el evento completo en orden cronológico sin perderse de nada: las actividades, las sorpresas, los discursos y el momento de cantar el cumpleaños."
+    "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante con revelado digital de alta resolución.",
+    "<strong>Recap Cinematográfico Corto (Highlight):</strong> Video dinámico, estético y de alto impacto, editado en formato ideal para compartir en redes sociales (Reels/TikTok).",
+    "<strong>Video Resumen Extendido Documental:</strong> Cobertura audiovisual cronológica de larga duración que registra discursos, sorpresas y momentos clave sin perderse de nada."
   ]
 };
 
@@ -589,7 +592,10 @@ function updateRange(v) {
 function updateCumpleUI() {
   const listContainer = document.getElementById('inc-list');
   listContainer.innerHTML = '';
-  INCLUSIONS[state.mode].forEach(text => {
+  
+  state.currentInclusions = INCLUSIONS[state.mode];
+  
+  state.currentInclusions.forEach(text => {
     const li = document.createElement('li');
     li.innerHTML = text;
     listContainer.appendChild(li);
@@ -674,7 +680,6 @@ function guardarDatos() {
   fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 }
 
-// ENVIAR MENSAJES PERSONALIZADOS SEGÚN EL BOTÓN SELECCIONADO
 function sendWA(actionType) {
   const name = document.getElementById('inp-nombre').value;
   const eventName = document.getElementById('inp-evento').value;
@@ -690,6 +695,53 @@ function sendWA(actionType) {
   }
   
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
+}
+
+// === NUEVA FUNCIÓN: COPIAR AL PORTAPAPELES CON TEXTO DETALLADO ===
+function copiarCotizacion() {
+  const name = document.getElementById('inp-nombre').value || 'Cliente';
+  const eventName = document.getElementById('inp-evento').value || 'Por definir';
+  const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
+  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil (Ecuador)';
+  
+  // Limpiar etiquetas <strong> para texto plano impecable
+  const descripcionesPlanas = state.currentInclusions.map(text => {
+    return "✨ " + text.replace(/<\/?strong>/g, '');
+  }).join("\n");
+
+  const textoCopiar = `📄 COTIZACIÓN DE SERVICIO AUDIOVISUAL — LEMONFILMZ
+--------------------------------------------------
+👤 Cliente: ${name}
+📌 Evento: ${eventName}
+📅 Fecha: ${eventDate}
+📍 Ubicación/Notas: ${eventLocation}
+
+⚙️ DETALLE DEL SERVICIO:
+• Cobertura: ${state.details}
+• Tiempo exacto: ${state.exactHrs} ${state.exactHrs === 1 ? 'hora' : 'horas'}
+
+📦 INCLUSIONES DETALLADAS:
+${descripcionesPlanas}
+
+--------------------------------------------------
+💰 INVERSIÓN TOTAL: $${state.price}.00 USD
+--------------------------------------------------
+* Las tarifas aplican dentro de Guayaquil. Sujeto a cambios fuera de la ciudad.`;
+
+  navigator.clipboard.writeText(textoCopiar).then(() => {
+    const btn = document.getElementById('btn-copiar');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✅ ¡Copiado al Portapapeles!';
+    btn.style.background = '#2a6b4a';
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.background = '';
+    }, 2000);
+  }).catch(err => {
+    console.error('Error al copiar el texto: ', err);
+    alert('No se pudo copiar automáticamente. Por favor, selecciona el texto manualmente.');
+  });
 }
 </script>
 
