@@ -355,7 +355,6 @@
 
 <header class="page-header">
   <img src="LemonfLuZ (1).png" alt="Logo LemonFilmz" style="max-width: 140px; height: auto; margin-bottom: 15px; display: inline-block;">
-  
   <div class="logo">Lemon<em>Filmz</em></div>
   <div class="logo-sub">Fotografía &amp; Videografía · Ecuador</div>
 </header>
@@ -386,29 +385,23 @@
 
   <div id="step1">
     <p class="section-heading">¿Qué servicio necesitas?</p>
-    <div class="grid-2">
+    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
       <div class="opt" onclick="pickService('social')" id="opt-social">
         <div class="opt-icon">🎉</div>
-        <div class="opt-name">Evento social</div>
-        <div class="opt-desc">Cumpleaños, grados, fiestas corporativas</div>
-        <div class="opt-price">Desde $65/h</div>
-      </div>
-      <div class="opt" onclick="pickService('boda')" id="opt-boda">
-        <div class="opt-icon">💍</div>
-        <div class="opt-name">Boda</div>
-        <div class="opt-desc">Civil o eclesiástica con recepción</div>
-        <div class="opt-price">Desde $450</div>
+        <div class="opt-name">Evento Social</div>
+        <div class="opt-desc">Bodas, cumpleaños, quinceañeras, corporativos...</div>
+        <div class="opt-price">Personalizado</div>
       </div>
       <div class="opt" onclick="pickService('marca')" id="opt-marca">
         <div class="opt-icon">📲</div>
         <div class="opt-name">Contenido para marca</div>
-        <div class="opt-desc">Reels, lanzamientos, publicidad</div>
+        <div class="opt-desc">Reels, lanzamientos, publicidad comercial</div>
         <div class="opt-price">Desde $125</div>
       </div>
       <div class="opt" onclick="pickService('drone')" id="opt-drone">
         <div class="opt-icon">🚁</div>
         <div class="opt-name">Solo drone</div>
-        <div class="opt-desc">Tomas aéreas profesionales</div>
+        <div class="opt-desc">Tomas aéreas profesionales fijas</div>
         <div class="opt-price">Desde $80</div>
       </div>
     </div>
@@ -416,13 +409,70 @@
 
   <div id="step2" class="hidden">
 
-    <div id="det-social" class="hidden">
-      <p class="section-heading">Personaliza tu evento social</p>
+    <div id="sub-social-types" class="hidden">
+      <p class="section-heading">Selecciona el tipo de evento:</p>
+      <div class="grid-2" style="margin-bottom:1.5rem">
+        <div class="opt" onclick="selectSocialSubtype('boda')" id="sub-boda">
+          <div class="opt-icon">💍</div>
+          <div class="opt-name">Boda</div>
+          <div class="opt-desc">Cobertura civil o eclesiástica completa</div>
+        </div>
+        <div class="opt" onclick="selectSocialSubtype('cumple')" id="sub-cumple">
+          <div class="opt-icon">🎂</div>
+          <div class="opt-name">Cumpleaños</div>
+          <div class="opt-desc">Celebraciones y fiestas íntimas</div>
+        </div>
+        <div class="opt" onclick="selectSocialSubtype('quince')" id="sub-quince">
+          <div class="opt-icon">👑</div>
+          <div class="opt-name">Quinceañera</div>
+          <div class="opt-desc">Fiesta de quince años y protocolo</div>
+        </div>
+        <div class="opt" onclick="selectSocialSubtype('otro')" id="sub-otro">
+          <div class="opt-icon">✨</div>
+          <div class="opt-name">Otro evento</div>
+          <div class="opt-desc">Grados, corporativos o reuniones</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="goStep1()">← Volver al inicio</button>
+    </div>
+
+    <div id="det-boda-options" class="hidden">
+      <p class="section-heading">Tipo de Boda</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem">
+        <div class="opt" onclick="pickBodaPackage('civil', 450)" id="opt-b-civil">
+          <div class="opt-name">💒 Boda Civil + Recepción</div>
+          <div class="opt-desc">5 horas de cobertura · Foto y video · Edición incluida</div>
+          <div class="opt-price">$450</div>
+        </div>
+        <div class="opt" onclick="pickBodaPackage('eclesiastica', 750)" id="opt-b-ecl">
+          <div class="opt-name">Hexagon ⛪ Boda Eclesiástica + Recepción</div>
+          <div class="opt-desc">8 horas de cobertura · Foto y video · Edición incluida</div>
+          <div class="opt-price">$750</div>
+        </div>
+      </div>
+
+      <div id="boda-drone-row" class="hidden" style="border-top:1px solid var(--line); padding-top:15px;">
+        <div class="field-row">
+          <span class="field-label">¿Incluir Drone?</span>
+          <div class="chips">
+            <div class="chip on" id="boda-dr-no" onclick="setBodaDrone(false)">No, sin drone</div>
+            <div class="chip" id="boda-dr-si" onclick="setBodaDrone(true)">Sí, agregar drone (+$80 tarifa fija)</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="boda-summary" class="summary-box hidden"></div>
+      <button class="btn btn-primary id-boda-next hidden" style="margin-top:1.25rem" onclick="goStep3()">Continuar →</button>
+      <button class="btn btn-ghost" onclick="backToSocialSubtypes()" style="margin-top:0.5rem">← Volver</button>
+    </div>
+
+    <div id="det-hourly" class="hidden">
+      <p class="section-heading" id="hourly-title">Personaliza tu cobertura</p>
       <div class="field-row">
         <span class="field-label">Modalidad</span>
         <div class="chips">
-          <div class="chip on" id="chip-foto" onclick="setMode('foto')">Solo fotografía (1 cámara)</div>
-          <div class="chip" id="chip-fotovideo" onclick="setMode('fotovideo')">Foto + Video (2 cámaras)</div>
+          <div class="chip on" id="chip-foto" onclick="setHourlyMode('foto')">Solo fotografía (1 cámara)</div>
+          <div class="chip" id="chip-fotovideo" onclick="setHourlyMode('fotovideo')">Foto + Video (2 cámaras)</div>
         </div>
       </div>
       <div class="field-row">
@@ -435,67 +485,34 @@
       <div class="field-row">
         <span class="field-label">Agregar drone</span>
         <div class="chips">
-          <div class="chip on" id="chip-drno" onclick="setDrone(false)">No, sin drone</div>
-          <div class="chip" id="chip-drsi" onclick="setDrone(true)">Sí, agregar drone</div>
+          <div class="chip on" id="chip-drno" onclick="setHourlyDrone(false)">No, sin drone</div>
+          <div class="chip" id="chip-drsi" onclick="setHourlyDrone(true)">Sí, agregar drone</div>
         </div>
       </div>
       <div id="drone-opts" class="hidden" style="margin-top:10px">
         <div class="grid-3" style="gap:8px">
-          <div class="opt" onclick="setDroneTime(80,'30 min')" id="dr-30">
+          <div class="opt" onclick="setHourlyDroneTime(80,'30 min')" id="dr-30">
             <div class="opt-name">30 min vuelo</div>
             <div class="opt-price">$80</div>
           </div>
-          <div class="opt" onclick="setDroneTime(100,'1.5 h')" id="dr-90">
+          <div class="opt" onclick="setHourlyDroneTime(100,'1.5 h')" id="dr-90">
             <div class="opt-name">1.5 h vuelo</div>
             <div class="opt-price">$100</div>
           </div>
-          <div class="opt" onclick="setDroneTime(130,'3 h')" id="dr-180">
+          <div class="opt" onclick="setHourlyDroneTime(130,'3 h')" id="dr-180">
             <div class="opt-name">3 h vuelo</div>
             <div class="opt-price">$130</div>
           </div>
         </div>
       </div>
-      <div id="social-summary" class="summary-box"></div>
+      <div id="hourly-summary" class="summary-box"></div>
       <button class="btn btn-primary" style="margin-top:1.25rem" onclick="goStep3()">Continuar →</button>
-      <button class="btn btn-ghost" onclick="goStep1()">← Volver</button>
-    </div>
-
-    <div id="det-boda" class="hidden">
-      <p class="section-heading">Elige tu cobertura de boda</p>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="opt" onclick="pickBoda('civil',450)" id="opt-b-civil">
-          <div class="opt-name">💒 Boda civil + recepción</div>
-          <div class="opt-desc">5 horas de cobertura · Foto y video · Edición incluida</div>
-          <div class="opt-price">$450 — precio fijo</div>
-        </div>
-        <div class="opt" onclick="pickBoda('eclesiastica',750)" id="opt-b-ecl">
-          <div class="opt-name">⛪ Boda eclesiástica + recepción</div>
-          <div class="opt-desc">8 horas de cobertura · Foto y video · Edición incluida</div>
-          <div class="opt-price">$750 — precio fijo</div>
-        </div>
-        <div class="opt" onclick="pickBoda('completo',450)" id="opt-b-comp">
-          <div class="opt-name">⭐ Paquete completo premium</div>
-          <div class="opt-desc">Foto + video + Drone &amp; Save the date de cortesía (Gratis)</div>
-          <div class="opt-price">Precio base de boda elegida</div>
-        </div>
-      </div>
-      <div id="boda-civil-extra" class="hidden" style="margin-top:15px">
-        <div class="field-row">
-          <span class="field-label">Tipo de boda para el paquete:</span>
-          <div class="chips">
-            <div class="chip on" id="bc-civil" onclick="setBodaBase('civil',450)">Civil ($450)</div>
-            <div class="chip" id="bc-ecl" onclick="setBodaBase('eclesiastica',750)">Eclesiástica ($750)</div>
-          </div>
-        </div>
-      </div>
-      <div id="boda-summary" class="summary-box hidden"></div>
-      <button class="btn btn-primary id-boda-next hidden" style="margin-top:1.25rem" onclick="goStep3()">Continuar →</button>
-      <button class="btn btn-ghost" onclick="goStep1()" style="margin-top:1rem">← Volver</button>
+      <button class="btn btn-ghost" onclick="backToSocialSubtypes()" style="margin-top:0.5rem">← Volver</button>
     </div>
 
     <div id="det-marca" class="hidden">
       <p class="section-heading">Contenido para tu marca</p>
-      <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem">
         <div class="opt" onclick="pickMarca('reel',125)" id="opt-m-reel">
           <div class="opt-name">📱 Reel corto para redes</div>
           <div class="opt-desc">Video dinámico optimizado (Instagram / TikTok)</div>
@@ -507,12 +524,12 @@
           <div class="opt-price">$185</div>
         </div>
       </div>
-      <button class="btn btn-ghost" onclick="goStep1()" style="margin-top:1rem">← Volver</button>
+      <button class="btn btn-ghost" onclick="goStep1()">← Volver</button>
     </div>
 
     <div id="det-drone" class="hidden">
       <p class="section-heading">Elige tu tiempo de vuelo</p>
-      <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem">
         <div class="opt" onclick="pickDroneOnly(80,'30 min')" id="opt-dr-only-30">
           <div class="opt-name">🚁 Bloque Corto</div>
           <div class="opt-desc">Hasta 30 minutos de vuelo</div>
@@ -520,7 +537,7 @@
         </div>
         <div class="opt" onclick="pickDroneOnly(100,'1.5 h')" id="opt-dr-only-90">
           <div class="opt-name">🚁 Bloque Mediano</div>
-          <div class="opt-desc">Hasta 1.5 horas de cobertura aérea</div>
+          <div class="opt-desc">Hasta 1.5 hours de cobertura aérea</div>
           <div class="opt-price">$100</div>
         </div>
         <div class="opt" onclick="pickDroneOnly(130,'3 h')" id="opt-dr-only-180">
@@ -529,7 +546,7 @@
           <div class="opt-price">$130</div>
         </div>
       </div>
-      <button class="btn btn-ghost" onclick="goStep1()" style="margin-top:1rem">← Volver</button>
+      <button class="btn btn-ghost" onclick="goStep1()">← Volver</button>
     </div>
 
   </div>
@@ -569,32 +586,29 @@
 </div>
 
 <script>
-// CONFIGURACIÓN DE TU ENLACE DE GOOGLE SHEETS
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-pzimIFn2GhiyUHVhc3hlA3kwyYQ9f-KBJE43aKV8jixrxq_uAY6pBQ/exec';
 
-// CONFIGURACIÓN DE CONTACTO
+// NÚMERO DE WHATSAPP RECONFIGURADO CORRECTAMENTE
 const WA = '593983424168'; 
 const EMAIL_LEMONFILMZ = 'stalyn.garcia@example.com'; 
 
 const st = {
-  service: null,
-  mode: 'foto',
+  service: null,       // 'social', 'marca', 'drone'
+  socialSubtype: null, // 'boda', 'cumple', 'quince', 'otro'
+  mode: 'foto',        // 'foto', 'fotovideo'
   hrs: 3,
   drone: false,
   dronePrice: 0,
   droneLabel: '',
-  bodaTipo: null,
-  bodaBase: 450,
+  bodaTipo: null,      // 'civil', 'eclesiastica'
+  bodaBase: 0,
+  bodaDroneTariff: 80, 
   marcaTipo: null,
   price: 0,
-  label: '',
-  details: []
+  label: ''
 };
 
-const RATES = { 
-  foto: 65,      
-  fotovideo: 95  
-};
+const RATES = { foto: 65, fotovideo: 95 };
 
 function setStep(n) {
   [1,2,3,4].forEach(i => {
@@ -610,23 +624,47 @@ function setStep(n) {
 function pickService(s) {
   st.service = s;
   setStep(2);
-  ['social','boda','marca','drone'].forEach(t => document.getElementById('det-'+t).classList.toggle('hidden', t !== s));
   
-  if(s !== 'boda') {
-    document.getElementById('boda-summary').classList.add('hidden');
-    document.querySelector('.id-boda-next').classList.add('hidden');
-    ['civil','ecl','comp'].forEach(x => document.getElementById('opt-b-'+x).classList.remove('selected'));
-  }
+  // Ocultar todos los contenedores principales del Paso 2
+  document.getElementById('sub-social-types').classList.add('hidden');
+  document.getElementById('det-boda-options').classList.add('hidden');
+  document.getElementById('det-hourly').classList.add('hidden');
+  document.getElementById('det-marca').classList.add('hidden');
+  document.getElementById('det-drone').classList.add('hidden');
 
-  if (s === 'social') { calcSocial(); renderSocialSummary(); }
+  if (s === 'social') {
+    document.getElementById('sub-social-types').classList.remove('hidden');
+  } else if (s === 'marca') {
+    document.getElementById('det-marca').classList.remove('hidden');
+  } else if (s === 'drone') {
+    document.getElementById('det-drone').classList.remove('hidden');
+  }
+}
+
+function selectSocialSubtype(sub) {
+  st.socialSubtype = sub;
+  document.getElementById('sub-social-types').classList.add('hidden');
+
+  if (sub === 'boda') {
+    document.getElementById('det-boda-options').classList.remove('hidden');
+    resetBodaSelection();
+  } else {
+    document.getElementById('det-hourly').classList.remove('hidden');
+    const titles = { cumple: 'Personaliza tu Cumpleaños', quince: 'Personaliza tu Quinceañera', otro: 'Personaliza tu Evento' };
+    document.getElementById('hourly-title').textContent = titles[sub];
+    calcHourly();
+    renderHourlySummary();
+  }
+}
+
+function backToSocialSubtypes() {
+  document.getElementById('det-boda-options').classList.add('hidden');
+  document.getElementById('det-hourly').classList.add('hidden');
+  document.getElementById('sub-social-types').classList.remove('hidden');
 }
 
 function goStep1() { setStep(1); }
-
-function goStep2() {
-  setStep(2);
-  ['social','boda','marca','drone'].forEach(t => document.getElementById('det-'+t).classList.toggle('hidden', t !== st.service));
-}
+function goStep2() { setStep(2); }
 
 function goStep3() {
   calcPrice();
@@ -634,117 +672,121 @@ function goStep3() {
   setStep(3);
 }
 
-function guardarCotizacionEnGoogleSheets() {
-  const name = document.getElementById('inp-nombre').value.trim() || 'Cliente Anónimo';
-  const event = document.getElementById('inp-evento').value.trim() || 'No especificado';
-  const fechaEv = document.getElementById('inp-fecha').value.trim() || 'No especificada';
-  const email = document.getElementById('inp-email').value.trim() || 'No especificado';
-  const tel = document.getElementById('inp-tel').value.trim() || 'No especificado';
-  const nota = document.getElementById('inp-nota').value.trim() || '';
-  const total = st.service === 'boda' ? st.bodaBase : st.price;
-  const detalleStr = buildTextSummary();
-
-  const payload = {
-    nombre: name,
-    evento: event,
-    fechaEvento: fechaEv,
-    email: email,
-    telefono: tel,
-    detalle: detalleStr,
-    total: total,
-    nota: nota
-  };
-
-  fetch(GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(() => console.log('Datos guardados con éxito en la base de datos.'))
-  .catch(err => console.error('Error al guardar en Sheets:', err));
+// MANEJO DE BODAS
+function resetBodaSelection() {
+  st.bodaTipo = null;
+  st.bodaBase = 0;
+  st.drone = false;
+  document.getElementById('boda-summary').classList.add('hidden');
+  document.querySelector('.id-boda-next').classList.add('hidden');
+  document.getElementById('boda-drone-row').classList.add('hidden');
+  document.getElementById('opt-b-civil').classList.remove('selected');
+  document.getElementById('opt-b-ecl').classList.remove('selected');
+  setBodaDrone(false);
 }
 
-function goStep4() {
-  const name = document.getElementById('inp-nombre').value.trim() || 'Cliente';
-  const event = document.getElementById('inp-evento').value.trim();
+function pickBodaPackage(tipo, price) {
+  st.bodaTipo = tipo;
+  st.bodaBase = price;
   
-  guardarCotizacionEnGoogleSheets();
-
-  document.getElementById('confirm-sub').textContent =
-    'Hola ' + name + (event ? ', aquí está tu cotización para ' + event + '.' : '.') +
-    ' Contáctanos para confirmar la fecha y disponibilidad.';
-  document.getElementById('final-summary').innerHTML = buildSummaryHTML();
+  document.getElementById('opt-b-civil').classList.toggle('selected', tipo === 'civil');
+  document.getElementById('opt-b-ecl').classList.toggle('selected', tipo === 'eclesiastica');
   
-  setStep(4);
+  document.getElementById('boda-drone-row').classList.remove('hidden');
+  document.getElementById('boda-summary').classList.remove('hidden');
+  document.querySelector('.id-boda-next').classList.remove('hidden');
+  
+  calcBoda();
 }
 
-function setMode(m) {
+function setBodaDrone(v) {
+  st.drone = v;
+  document.getElementById('boda-dr-no').classList.toggle('on', !v);
+  document.getElementById('boda-dr-si').classList.toggle('on', v);
+  calcBoda();
+}
+
+function calcBoda() {
+  if (!st.bodaTipo) return;
+  st.price = st.bodaBase + (st.drone ? st.bodaDroneTariff : 0);
+  document.getElementById('boda-summary').innerHTML = buildSummaryHTML();
+}
+
+// MANEJO DE EVENTOS POR HORA
+function setHourlyMode(m) {
   st.mode = m;
   document.getElementById('chip-foto').classList.toggle('on', m === 'foto');
   document.getElementById('chip-fotovideo').classList.toggle('on', m === 'fotovideo');
-  calcSocial(); renderSocialSummary();
+  calcHourly(); renderHourlySummary();
 }
 
 function setHrs(v) {
   st.hrs = parseInt(v);
   document.getElementById('hrs-out').textContent = v + ' h';
-  calcSocial(); renderSocialSummary();
+  calcHourly(); renderHourlySummary();
 }
 
-function setDrone(v) {
+function setHourlyDrone(v) {
   st.drone = v;
   document.getElementById('chip-drno').classList.toggle('on', !v);
   document.getElementById('chip-drsi').classList.toggle('on', v);
   document.getElementById('drone-opts').classList.toggle('hidden', !v);
   if (!v) { st.dronePrice = 0; st.droneLabel = ''; } 
-  else if (st.dronePrice === 0) { setDroneTime(80,'30 min'); return; }
-  calcSocial(); renderSocialSummary();
+  else if (st.dronePrice === 0) { setHourlyDroneTime(80,'30 min'); return; }
+  calcHourly(); renderHourlySummary();
 }
 
-function setDroneTime(price, label) {
+function setHourlyDroneTime(price, label) {
   st.dronePrice = price; st.droneLabel = label;
   ['30','90','180'].forEach(x => document.getElementById('dr-'+x).classList.remove('selected'));
   const map = { 80: '30', 100: '90', 130: '180' };
   document.getElementById('dr-'+map[price]).classList.add('selected');
-  calcSocial(); renderSocialSummary();
+  calcHourly(); renderHourlySummary();
 }
 
-function calcSocial() {
+function calcHourly() {
   const rph = RATES[st.mode];
   st.price = (rph * st.hrs) + (st.drone ? st.dronePrice : 0);
 }
 
-function renderSocialSummary() {
-  document.getElementById('social-summary').innerHTML = buildSummaryHTML();
+function renderHourlySummary() {
+  document.getElementById('hourly-summary').innerHTML = buildSummaryHTML();
+}
+
+// SERVICIOS EXTERNOS
+function pickMarca(tipo, price) {
+  st.marcaTipo = tipo; st.price = price;
+  st.label = tipo === 'reel' ? 'Reel corto para redes' : 'Lanzamiento de marca (2.5h)';
+  goStep3();
+}
+
+function pickDroneOnly(price, label) {
+  st.dronePrice = price; st.droneLabel = label; st.price = price;
+  st.label = 'Solo Drone (' + label + ' de vuelo)';
+  goStep3();
 }
 
 function calcPrice() {
-  if (st.service === 'social') calcSocial();
+  if (st.service === 'social') {
+    if (st.socialSubtype === 'boda') calcBoda();
+    else calcHourly();
+  }
 }
 
 function buildSummaryHTML() {
   let rows = '';
   if (st.service === 'social') {
-    const rph = RATES[st.mode];
-    const mLabel = st.mode === 'foto' ? 'Solo Fotografía (1 cámara)' : 'Foto + Video (2 cámaras)';
-    rows += row(mLabel + ' · ' + st.hrs + 'h ($' + rph + '/h)', '$' + (rph * st.hrs));
-    if (st.drone && st.dronePrice) rows += row('Adicional: Drone (' + st.droneLabel + ')', '$' + st.dronePrice);
-    rows += `<div class="sum-row sum-total"><span>Total estimado</span><span class="amount">$${st.price}</span></div>`;
-  } 
-  else if (st.service === 'boda') {
-    if (st.bodaTipo === 'civil') {
-      rows += row('Boda Civil + Recepción (5h max)', '$450');
-      rows += `<div class="sum-row sum-total"><span>Total Cobertura</span><span class="amount">$450</span></div>`;
-    } else if (st.bodaTipo === 'eclesiastica') {
-      rows += row('Boda Eclesiástica + Recepción (8h max)', '$750');
-      rows += `<div class="sum-row sum-total"><span>Total Cobertura</span><span class="amount">$750</span></div>`;
-    } else if (st.bodaTipo === 'completo') {
-      const bLabel = st.bodaBase === 450 ? 'Boda Civil (5h Cobertura)' : 'Boda Eclesiástica (8h Cobertura)';
-      rows += row('Paquete Completo — ' + bLabel, '$' + st.bodaBase);
-      rows += row('🎁 Cobertura de Drone', 'De Cortesía (GRATIS)');
-      rows += row('🎁 Sesión Save The Date', 'De Cortesía (GRATIS)');
-      rows += `<div class="sum-row sum-total"><span>Total Paquete Especial</span><span class="amount">$${st.bodaBase}</span></div>`;
+    if (st.socialSubtype === 'boda') {
+      const bLabel = st.bodaTipo === 'civil' ? 'Boda Civil + Recepción (5h)' : 'Boda Eclesiástica + Recepción (8h)';
+      rows += row(bLabel, '$' + st.bodaBase);
+      if (st.drone) rows += row('Adicional: Cobertura de Drone', '$' + st.bodaDroneTariff);
+      rows += `<div class="sum-row sum-total"><span>Total Cobertura</span><span class="amount">$${st.price}</span></div>`;
+    } else {
+      const subLabels = { cumple: 'Cumpleaños', quince: 'Quinceañera', otro: 'Evento Especial' };
+      const mLabel = st.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video (2 cámaras)';
+      rows += row(`${subLabels[st.socialSubtype]} — ${mLabel} (${st.hrs}h)`, '$' + (RATES[st.mode] * st.hrs));
+      if (st.drone && st.dronePrice) rows += row('Adicional: Drone (' + st.droneLabel + ')', '$' + st.dronePrice);
+      rows += `<div class="sum-row sum-total"><span>Total estimado</span><span class="amount">$${st.price}</span></div>`;
     }
   } 
   else if (st.service === 'marca') {
@@ -759,62 +801,66 @@ function buildSummaryHTML() {
   return rows;
 }
 
-function row(label, val) {
-  return `<div class="sum-row"><span>${label}</span><span>${val}</span></div>`;
+function row(label, val) { return `<div class="sum-row"><span>${label}</span><span>${val}</span></div>`; }
+
+function guardarCotizacionEnGoogleSheets() {
+  const name = document.getElementById('inp-nombre').value.trim() || 'Cliente Anónimo';
+  const event = document.getElementById('inp-evento').value.trim() || 'No especificado';
+  const fechaEv = document.getElementById('inp-fecha').value.trim() || 'No especificada';
+  const email = document.getElementById('inp-email').value.trim() || 'No especificado';
+  const tel = document.getElementById('inp-tel').value.trim() || 'No especificado';
+  const nota = document.getElementById('inp-nota').value.trim() || '';
+  const detalleStr = buildTextSummary();
+
+  const payload = {
+    nombre: name,
+    evento: event,
+    fechaEvento: fechaEv,
+    email: email,
+    telefono: tel,
+    detalle: detalleStr,
+    total: st.price,
+    nota: nota
+  };
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 }
 
-function pickBoda(tipo, price) {
-  st.bodaTipo = tipo;
-  document.getElementById('boda-summary').classList.remove('hidden');
-  document.querySelector('.id-boda-next').classList.remove('hidden');
+function goStep4() {
+  const name = document.getElementById('inp-nombre').value.trim() || 'Cliente';
+  const event = document.getElementById('inp-evento').value.trim();
+  guardarCotizacionEnGoogleSheets();
+  document.getElementById('confirm-sub').textContent = 'Hola ' + name + (event ? ', aquí está tu cotización para ' + event + '.' : '.') + ' Contáctanos para confirmar la fecha y disponibilidad.';
+  document.getElementById('final-summary').innerHTML = buildSummaryHTML();
+  setStep(4);
+}
 
-  if (tipo === 'completo') {
-    st.bodaBase = 450; st.price = 450;
-    document.getElementById('boda-civil-extra').classList.remove('hidden');
-  } else {
-    st.price = price; st.bodaBase = price;
-    document.getElementById('boda-civil-extra').classList.add('hidden');
+function buildTextSummary() {
+  if (st.service === 'social') {
+    if (st.socialSubtype === 'boda') {
+      return 'Boda ' + (st.bodaTipo === 'civil' ? 'Civil' : 'Eclesiástica') + (st.drone ? ' + Drone Incluido' : ' (Sin Drone)');
+    } else {
+      const subLabels = { cumple: 'Cumpleaños', quince: 'Quinceañera', otro: 'Evento' };
+      return subLabels[st.socialSubtype] + ' — ' + (st.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video') + ' por ' + st.hrs + ' horas' + (st.drone ? ' + Drone (' + st.droneLabel + ')' : '');
+    }
   }
-
-  ['civil','ecl','comp'].forEach(x => document.getElementById('opt-b-'+x).classList.remove('selected'));
-  const map = { civil:'civil', eclesiastica:'ecl', completo:'comp' };
-  document.getElementById('opt-b-'+map[tipo]).classList.add('selected');
-  
-  st.label = tipo === 'civil' ? 'Boda Civil + Recepción' : tipo === 'eclesiastica' ? 'Boda Eclesiástica + Recepción' : 'Paquete Completo Premium';
-  document.getElementById('boda-summary').innerHTML = buildSummaryHTML();
+  if (st.service === 'marca') return st.label;
+  if (st.service === 'drone') return st.label;
+  return '';
 }
 
-function setBodaBase(tipo, price) {
-  st.bodaBase = price; st.price = price;
-  document.getElementById('bc-civil').classList.toggle('on', tipo === 'civil');
-  document.getElementById('bc-ecl').classList.toggle('on', tipo === 'eclesiastica');
-  document.getElementById('boda-summary').innerHTML = buildSummaryHTML();
-}
-
-function pickMarca(tipo, price) {
-  st.marcaTipo = tipo; st.price = price;
-  st.label = tipo === 'reel' ? 'Reel corto para redes' : 'Lanzamiento de marca (2.5h)';
-  goStep3();
-}
-
-function pickDroneOnly(price, label) {
-  st.dronePrice = price; st.droneLabel = label; st.price = price;
-  st.label = 'Solo Drone (' + label + ' de vuelo)';
-  
-  ['30','90','180'].forEach(x => document.getElementById('opt-dr-only-'+x).classList.remove('selected'));
-  const map = { 80: '30', 100: '90', 130: '180' };
-  document.getElementById('opt-dr-only-'+map[price]).classList.add('selected');
-  goStep3();
-}
-
-function buildWAMsg() {
+function sendWA() {
   const n = document.getElementById('inp-nombre').value.trim() || 'Cliente';
   const ev = document.getElementById('inp-evento').value.trim();
   const fe = document.getElementById('inp-fecha').value.trim();
   const em = document.getElementById('inp-email').value.trim();
   const tel = document.getElementById('inp-tel').value.trim();
   const nota = document.getElementById('inp-nota').value.trim();
-  const total = st.service === 'boda' ? st.bodaBase : st.price;
 
   let msg = '¡Hola LemonFilmz! Acabo de armar una cotización desde el cotizador web.\n\n';
   msg += '*Cliente:* ' + n + '\n';
@@ -823,30 +869,10 @@ function buildWAMsg() {
   if (em) msg += '*Email:* ' + em + '\n';
   if (tel) msg += '*WhatsApp:* ' + tel + '\n';
   msg += '*Detalle del Servicio:* ' + buildTextSummary() + '\n';
-  msg += '*Total estimado:* $' + total + ' USD\n';
+  msg += '*Total estimado:* $' + st.price + ' USD\n';
   if (nota) msg += '\n*Notas adicionales:* ' + nota + '\n';
   msg += '\n¿Tienes disponibilidad en agenda? Quedo atento.';
-  return msg;
-}
-
-function buildTextSummary() {
-  if (st.service === 'social') {
-    const rph = RATES[st.mode];
-    return (st.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video (2 cámaras)') + ' por ' + st.hrs + ' horas' + (st.drone ? ' + Drone (' + st.droneLabel + ')' : '');
-  }
-  if (st.service === 'boda') {
-    if(st.bodaTipo === 'completo') {
-      return 'Paquete Completo Premium (' + (st.bodaBase === 450 ? 'Boda Civil 5h' : 'Boda Eclesiástica 8h') + ' + Drone & Save the date de regalo)';
-    }
-    return st.label;
-  }
-  if (st.service === 'marca') return st.label;
-  if (st.service === 'drone') return st.label;
-  return '';
-}
-
-function sendWA() {
-  const msg = buildWAMsg();
+  
   window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');
 }
 
@@ -855,7 +881,6 @@ function sendEmail() {
   const ev = document.getElementById('inp-evento').value.trim();
   const fe = document.getElementById('inp-fecha').value.trim();
   const nota = document.getElementById('inp-nota').value.trim();
-  const total = st.service === 'boda' ? st.bodaBase : st.price;
 
   const subject = 'Cotización Audiovisual LemonFilmz' + (ev ? ' — ' + ev : '');
   let body = 'Hola,\n\nSe ha generado una nueva propuesta de presupuesto desde tu cotizador online.\n\n';
@@ -863,13 +888,11 @@ function sendEmail() {
   if (ev) body += 'Tipo de Evento: ' + ev + '\n';
   if (fe) body += 'Fecha Solicitada: ' + fe + '\n';
   body += 'Resumen de Cobertura: ' + buildTextSummary() + '\n';
-  body += 'Inversión estimada: $' + total + ' USD\n';
+  body += 'Inversión estimada: $' + st.price + ' USD\n';
   if (nota) body += '\nComentarios del cliente:\n' + nota + '\n';
-  body += '\nPor favor revisar disponibilidad para responder al cliente.\n\nSaludos,\nCotizador Automático LemonFilmz';
 
   window.location.href = 'mailto:' + EMAIL_LEMONFILMZ + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 }
 </script>
-
 </body>
 </html>
