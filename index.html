@@ -126,7 +126,6 @@
   
   .p-footer-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; margin-top: 20px; }
   
-  /* Alerta de Agenda en el PDF */
   .p-notice-box { background: #fff9e6; border: 1px dashed #f5c242; padding: 15px; border-radius: 10px; font-size: 12px; line-height: 1.6; color: #66501a; }
   .p-notice-box strong { color: #b37d00; display: block; font-size: 13px; margin-bottom: 4px; }
   
@@ -134,8 +133,6 @@
   .p-math-row { display: flex; justify-content: flex-end; gap: 30px; margin-bottom: 8px; font-size: 15px; color: #555; }
   .p-discount-line { color: #2a6b4a; font-weight: 500; }
   .p-total-big { font-size: 28px; font-weight: bold; color: #2a6b4a; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-  
-  .p-ig { position: absolute; bottom: 50px; left: 50px; font-size: 12px; color: #888; }
 </style>
 </head>
 <body>
@@ -311,8 +308,6 @@
         <div class="p-total-big">Total Neto: <span id="pdf-m-total">$600,00</span></div>
       </div>
     </div>
-
-    <div class="p-ig">📸 Instagram: @stalyn_lemonfilmz</div>
   </div>
 </div>
 
@@ -370,10 +365,9 @@ function upUI() {
 
   const rate = (curH === 1) ? r[1] : (curH === 2) ? r[2] : r.base;
   
-  // Cálculo matemático con anclaje psicológico
-  state.subtotal = curH * r[1]; // Lo que costaría por horas individuales premium ($70 o $90)
-  state.price = curH * rate;    // Precio real aplicado
-  state.discount = state.subtotal - state.price; // El ahorro directo
+  state.subtotal = curH * r[1];
+  state.price = curH * rate;
+  state.discount = state.subtotal - state.price;
   state.exactH = curH;
 
   const inc = document.getElementById('inc-list');
@@ -381,7 +375,7 @@ function upUI() {
     ? '<li>Fotos ilimitadas capturando cada detalle</li><li>Enfoque en momentos espontáneos y poses</li><li>Revelado digital y corrección de color</li>'
     : '<li>Todo lo de fotografía incluido</li><li>Recap Cinematográfico Corto (Redes)</li><li>Video Resumen Documental Extendido</li>';
 
-  let txtAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:600;"><span>🎉 Descuento por Combo:</span><span>-$${state.discount}</span></div>` : '';
+  let txtAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:600;"><span>🎉 Te estás ahorrando:</span><span>-$${state.discount}</span></div>` : '';
 
   document.getElementById('sum-box').innerHTML = `
     <div class="sum-row"><span>Valor de lista (${curH}h):</span><span>$${state.subtotal}</span></div>
@@ -395,7 +389,7 @@ function closeMod() { document.getElementById('modal').classList.remove('open');
 
 function renderF() {
   const f = document.getElementById('i-fec').value;
-  let linesAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:500;"><span>Ahorro Especial:</span><strong>-$${state.discount}</strong></div>` : '';
+  let linesAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:500;"><span>🎉 Te estás ahorrando:</span><strong>-$${state.discount}</strong></div>` : '';
   
   document.getElementById('final-sum').innerHTML = `
     <div class="sum-row"><span>Evento:</span><strong>${state.sub.toUpperCase()}</strong></div>
@@ -420,7 +414,6 @@ function genPDF() {
   document.getElementById('pdf-pers').textContent = (state.mode === 'foto') ? '1 Persona (fotógrafo profesional)' : '2 Personas (fotógrafo y videógrafo)';
   document.getElementById('pdf-cant').textContent = state.exactH + ' horas';
   
-  // Seteo de desglose de precios en la tabla y pie
   document.getElementById('pdf-sub1').textContent = `$${state.subtotal},00`;
   document.getElementById('pdf-m-sub').textContent = `$${state.subtotal},00`;
   document.getElementById('pdf-m-desc').textContent = `-$${state.discount},00`;
