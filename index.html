@@ -216,10 +216,9 @@
     margin-bottom: 1.5rem;
     animation: fadeIn 0.3s ease both;
   }
-  .inclusion-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .inclusion-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 10px; font-weight: 600; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
   .inclusion-list { list-style: none; }
-  .inclusion-list li { font-size: 0.85rem; color: var(--ink); line-height: 1.5; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; }
-  .inclusion-list li::before { content: "✨"; font-size: 0.85rem; }
+  .inclusion-list li { font-size: 0.85rem; color: var(--ink); line-height: 1.5; margin-bottom: 10px; }
   
   .portfolio-inline-btn {
     display: inline-block;
@@ -240,7 +239,7 @@
   .portfolio-hint-text {
     font-size: 0.75rem;
     color: var(--muted);
-    margin-top: 6px;
+    margin-top: 8px;
     line-height: 1.3;
   }
 
@@ -412,7 +411,7 @@
 
       <div id="express-hours-selector" class="hidden" style="margin-top:20px; background:var(--surface); border: 1px dashed var(--line); padding:15px; border-radius:12px;">
         <div class="field-row" style="border:none; padding:0;">
-          <span class="field-label">Duración Express</span>
+          <span class="field-label" style="font-size: 0.85rem; font-weight: 500; margin-right: 10px;">Duración Express:</span>
           <div class="chips">
             <div class="chip on" id="exp-h1" onclick="setExpressHours(1)">1 Hora de cobertura</div>
             <div class="chip" id="exp-h2" onclick="setExpressHours(2)">2 Horas de cobertura</div>
@@ -674,7 +673,6 @@ function guardarDatos() {
   fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 }
 
-// ENVIAR MENSAJES PERSONALIZADOS SEGÚN EL BOTÓN SELECCIONADO
 function sendWA(actionType) {
   const name = document.getElementById('inp-nombre').value;
   const eventName = document.getElementById('inp-evento').value;
@@ -692,6 +690,5 @@ function sendWA(actionType) {
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 </script>
-
 </body>
 </html>
