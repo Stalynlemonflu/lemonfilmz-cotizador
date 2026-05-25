@@ -366,6 +366,15 @@
       <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1.5rem">← Volver</button>
     </div>
 
+    <div id="sub-boda-tipo" class="hidden">
+      <p class="section-heading">¿Qué tipo de boda celebraremos?</p>
+      <div class="grid-2">
+        <div class="opt" onclick="pickBodaTipo('civil')">⚖️ Boda Civil</div>
+        <div class="opt" onclick="pickBodaTipo('ecle')">⛪ Boda Eclesiástica / Religiosa</div>
+      </div>
+      <button class="btn btn-ghost" onclick="regresarAEventos()" style="margin-top:1.5rem">← Volver</button>
+    </div>
+
     <div id="det-cumple" class="hidden">
       <p class="section-heading">1. Configura tu Modalidad de Servicio</p>
       <div class="mode-container">
@@ -392,8 +401,9 @@
         <p class="portfolio-hint-text">💡 <em>¿Quieres ver proyectos específicos? Al finalizar tu cotización podrás solicitar mi portafolio completo por WhatsApp.</em></p>
       </div>
 
-      <p class="section-heading">2. Elige tu Combo de Cobertura</p>
-      <div class="grid-2" style="gap:12px">
+      <p class="section-heading" id="cobertura-heading">2. Elige tu Combo de Cobertura</p>
+      
+      <div class="grid-2" style="gap:12px" id="combos-tiempo-estandar">
         <div class="opt" id="combo-express" onclick="setCombo('express')">
           <div class="opt-name">Combo Express</div>
           <div class="opt-desc">Cobertura corta (1 o 2 horas)</div>
@@ -409,6 +419,30 @@
           <div class="opt-name">Combo Premium (Larga Duración)</div>
           <div class="opt-desc">Para fiestas grandes (de 4 a 12 horas)</div>
           <div class="opt-price" id="p-combo-custom">$50 / hora</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:12px" id="combos-boda-civil">
+        <div class="opt" id="boda-c1" onclick="setBodaCombo('civil_solo')">
+          <div class="opt-name">Solo Registro Civil</div>
+          <div class="opt-desc">Cobertura en Juzgado / Despacho (1-2h)</div>
+        </div>
+        <div class="opt" id="boda-c2" onclick="setBodaCombo('civil_recep')">
+          <div class="badge-rec">RECOMENDADO</div>
+          <div class="opt-name">Registro Civil + Recepción</div>
+          <div class="opt-desc">Protocolo legal y festejo posterior</div>
+        </div>
+        <div class="opt" id="boda-c3" onclick="setBodaCombo('civil_todo_recep')" style="grid-column: span 2;">
+          <div class="opt-name">Todo en Recepción (5 Horas)</div>
+          <div class="opt-desc">Firma legal en el salón + fiesta extendida</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:12px" id="combos-boda-ecle">
+        <div class="opt selected" style="grid-column: span 2; cursor: default;">
+          <div class="badge-rec">COBERTURA PREMIUM</div>
+          <div class="opt-name">Paquete Integral Religioso (8 Horas)</div>
+          <div class="opt-desc">Desde preparativos/iglesia hasta el final de la fiesta coreografiada.</div>
         </div>
       </div>
 
@@ -438,7 +472,7 @@
       </div>
 
       <button class="btn btn-primary" onclick="goStep(3)" style="margin-top:1.5rem">Continuar →</button>
-      <button class="btn btn-ghost" onclick="pickService('social')" style="margin-top:0.5rem">← Volver</button>
+      <button class="btn btn-ghost" onclick="regresarAEventos()" style="margin-top:0.5rem">← Volver</button>
     </div>
 
     <div id="det-generic" class="hidden">
@@ -505,27 +539,67 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-
 const WA_NUMBER = '593995007148';
 
 const state = {
-  step: 1, service: '', subtype: '', mode: 'foto', 
-  comboType: 'standard', expressHrs: 1, customHrs: 4,      
+  step: 1, service: '', subtype: '', bodaTipo: '', mode: 'foto', 
+  comboType: 'standard', expressHrs: 1, customHrs: 4, bodaCombo: 'civil_solo',     
   price: 0, details: '', exactHrs: 3, currentInclusions: []
 };
 
+// === NUEVA CONFIGURACIÓN INTEGRAL DE TARIFAS (TUS PRECIOS SE MANTIENEN IDÉNTICOS) ===
 const RATES = {
-  foto: { 1: 70, 2: 60, base: 50 },
-  fotovideo: { 1: 90, 2: 80, base: 70 }
+  cumple: {
+    foto: { 1: 70, 2: 60, base: 50 },
+    fotovideo: { 1: 90, 2: 80, base: 70 }
+  },
+  quince: {
+    foto: { 1: 80, 2: 70, base: 60 },
+    fotovideo: { 1: 100, 2: 90, base: 80 }
+  },
+  boda: {
+    civil_solo:       { hrs: 2, foto: 140, fotovideo: 180 },
+    civil_recep:      { hrs: 4, foto: 240, fotovideo: 320 },
+    civil_todo_recep: { hrs: 5, foto: 300, fotovideo: 400 },
+    ecle_completa:    { hrs: 8, foto: 480, fotovideo: 640 }
+  }
 };
 
+// === TEXTOS PUBLICITARIOS COPIADOS PALABRA POR PALABRA DE TU ORIGINAL ===
 const INCLUSIONS = {
-  foto: [
-    "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante. Se registran momentos espontáneos, poses creativas con invitados, protocolo, abrazos y emociones auténticas.",
-    "<strong>Entrega digital en alta definición:</strong> Revelado minucioso de todo el material con corrección de color y estilo profesional de autor.",
-    "<strong>Flexibilidad y Cobertura Total:</strong> El lente estará listo para capturar las interacciones y dinámicas familiares al ritmo que dicte tu evento."
-  ],
-  fotovideo: [
-    "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante con revelado digital de alta resolución.",
-    "<strong>Recap Cinematográfico Corto (Highlight):</strong> Video dinámico, estético y de alto impacto, editado en formato ideal para compartir en redes sociales (Reels/TikTok).",
-    "<strong>Video Resumen Extendido Documental:</strong> Cobertura audiovisual cronológica de larga duración que registra discursos, sorpresas y momentos clave sin perderse de nada."
-  ]
+  cumple: {
+    foto: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante. Se registran momentos espontáneos, poses creativas con invitados, protocolo, abrazos y emociones auténticas.",
+      "<strong>Entrega digital en alta definición:</strong> Revelado minucioso de todo el material con corrección de color y estilo profesional de autor.",
+      "<strong>Flexibilidad y Cobertura Total:</strong> El lente estará listo para capturar las interacciones y dinámicas familiares al ritmo que dicte tu evento."
+    ],
+    fotovideo: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante con revelado digital de alta resolución.",
+      "<strong>Recap Cinematográfico Corto (Highlight):</strong> Video dinámico, estético y de alto impacto, editado en formato ideal para compartir en redes sociales (Reels/TikTok).",
+      "<strong>Video Resumen Extendido Documental:</strong> Cobertura audiovisual cronológica de larga duración que registra discursos, sorpresas y momentos clave sin perderse de nada."
+    ]
+  },
+  quince: {
+    foto: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura completa del protocolo (entrada, vals, cambio de zapatilla, brindis) capturando la esencia y elegancia de la quinceañera junto a su corte de honor e invitados.",
+      "<strong>Revelado y Corrección de Color Premium:</strong> Todo el material pasa por un revelado digital minucioso para resaltar tonos de piel, texturas del vestido y la iluminación del evento.",
+      "<strong>Garantía de Momentos Espontáneos:</strong> Además de las fotos formales y de mesas, registramos las risas, el baile y la energía de la fiesta de inicio a fin."
+    ],
+    fotovideo: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura total del protocolo y momentos clave con revelado digital en alta definición.",
+      "<strong>Quinceanera Highlight Reel:</strong> Un video resumen dinámico, moderno y cinematográfico con transiciones de alto impacto, perfecto para compartir en tus redes sociales.",
+      "<strong>Película Documental Extendida:</strong> Registro completo y cronológico en alta definición que preserva intactos los discursos, sorpresas, el vals familiar y toda la diversión de la pista de baile."
+    ]
+  },
+  boda: {
+    foto: [
+      "<strong>Fotografía de Bodas Documental y Artística:</strong> Cobertura de miradas, emociones reales y la complicidad de la pareja. Cero poses acartonadas, priorizamos la narrativa orgánica de su amor.",
+      "<strong>Revelado de Autor Fine-Art:</strong> Tratamiento de color atemporal de nivel cinematográfico, optimizando la iluminación, el blanco del vestido y la elegancia de los trajes.",
+      "<strong>Galería Intacta de Recuerdos:</strong> Registro detallado de firmas, anillos, lágrimas de los padres, abrazos de los amigos y la fiesta."
+    ],
+    fotovideo: [
+      "<strong>Fotografía Documental Completa:</strong> Captura fotográfica ilimitada revelada en alta resolución.",
+      "<strong>Wedding Fine Highlight Film:</strong> Película corta de autor sumamente emotiva y artística, musicalizada con diseño sonoro fino, perfecta para revivir en redes y pantallas.",
+      "<strong>Película Documental de Bodas:</strong> Edición extendida cronológica que guarda de principio a fin los votos completos, las lecturas, el brindis de los padrinos y la locura del baile."
+    ]
+  }
 };
 
 function goStep(n) {
@@ -538,11 +612,8 @@ function goStep(n) {
     else document.getElementById('pd'+i).textContent = i;
   });
   
-  // Si regresas al Paso 2, nos aseguramos de mostrar el selector de eventos y ocultar los formularios específicos
   if (n === 2 && state.service === 'social') {
-    document.getElementById('sub-social').classList.remove('hidden');
-    document.getElementById('det-cumple').classList.add('hidden');
-    document.getElementById('det-generic').classList.add('hidden');
+    regresarAEventos();
   }
   
   if(n === 4) renderFinal();
@@ -550,12 +621,12 @@ function goStep(n) {
 
 function pickService(s) {
   state.service = s;
-  // Resetear subtipos al cambiar de servicio principal
   state.subtype = ''; 
   goStep(2);
   
   if (s === 'social') {
     document.getElementById('sub-social').classList.remove('hidden');
+    document.getElementById('sub-boda-tipo').classList.add('hidden');
     document.getElementById('det-cumple').classList.add('hidden');
     document.getElementById('det-generic').classList.add('hidden');
   } else {
@@ -567,12 +638,30 @@ function pickService(s) {
 function pickSubtype(t) {
   state.subtype = t;
   document.getElementById('sub-social').classList.add('hidden');
-  if (t === 'cumple') {
+  
+  if (t === 'boda') {
+    document.getElementById('sub-boda-tipo').classList.remove('hidden');
+  } else if (t === 'cumple' || t === 'quince') {
     document.getElementById('det-cumple').classList.remove('hidden');
     updateCumpleUI();
   } else {
     document.getElementById('det-generic').classList.remove('hidden');
   }
+}
+
+function pickBodaTipo(tipo) {
+  state.bodaTipo = tipo;
+  document.getElementById('sub-boda-tipo').classList.add('hidden');
+  document.getElementById('det-cumple').classList.remove('hidden');
+  state.bodaCombo = (tipo === 'civil') ? 'civil_solo' : 'ecle_completa';
+  updateCumpleUI();
+}
+
+function regresarAEventos() {
+  document.getElementById('sub-social').classList.remove('hidden');
+  document.getElementById('sub-boda-tipo').classList.add('hidden');
+  document.getElementById('det-cumple').classList.add('hidden');
+  document.getElementById('det-generic').classList.add('hidden');
 }
 
 function setMode(m) {
@@ -584,13 +673,11 @@ function setMode(m) {
 
 function setCombo(type) {
   state.comboType = type;
-  document.getElementById('combo-express').classList.toggle('selected', type === 'express');
-  document.getElementById('combo-3').classList.toggle('selected', type === 'standard');
-  document.getElementById('combo-custom').classList.toggle('selected', type === 'custom');
-  
-  document.getElementById('express-hours-selector').classList.toggle('hidden', type !== 'express');
-  document.getElementById('custom-slider').classList.toggle('hidden', type !== 'custom');
-  
+  updateCumpleUI();
+}
+
+function setBodaCombo(bCombo) {
+  state.bodaCombo = bCombo;
   updateCumpleUI();
 }
 
@@ -607,63 +694,117 @@ function updateRange(v) {
   updateCumpleUI();
 }
 
+// === ESTA FUNCIÓN AHORA SE ENCARGA DE CONTROLAR TODA LA INTERFAZ SOCIAL DINÁMICAMENTE ===
 function updateCumpleUI() {
   const listContainer = document.getElementById('inc-list');
   listContainer.innerHTML = '';
   
-  state.currentInclusions = INCLUSIONS[state.mode];
+  const esBoda = (state.subtype === 'boda');
   
+  // Mostrar u ocultar bloques de combos según el evento
+  document.getElementById('combos-tiempo-estandar').classList.toggle('hidden', esBoda);
+  document.getElementById('express-hours-selector').classList.add('hidden');
+  document.getElementById('custom-slider').classList.add('hidden');
+  
+  document.getElementById('combos-boda-civil').classList.toggle('hidden', !esBoda || state.bodaTipo !== 'civil');
+  document.getElementById('combos-boda-ecle').classList.toggle('hidden', !esBoda || state.bodaTipo !== 'ecle');
+
+  let hrs = 3;
+  let totalCalculated = 0;
+  let ratePorHora = 0;
+  let esPrecioFijo = false;
+
+  if (esBoda) {
+    state.currentInclusions = INCLUSIONS.boda[state.mode];
+    if (state.bodaTipo === 'civil') {
+      const bSel = state.bodaCombo;
+      document.getElementById('boda-c1').classList.toggle('selected', bSel === 'civil_solo');
+      document.getElementById('boda-c2').classList.toggle('selected', bSel === 'civil_recep');
+      document.getElementById('boda-c3').classList.toggle('selected', bSel === 'civil_todo_recep');
+      
+      hrs = RATES.boda[bSel].hrs;
+      totalCalculated = RATES.boda[bSel][state.mode];
+    } else {
+      hrs = RATES.boda.ecle_completa.hrs;
+      totalCalculated = RATES.boda.ecle_completa[state.mode];
+    }
+    esPrecioFijo = true;
+    document.getElementById('cobertura-heading').textContent = "2. Configuración de Cobertura de Boda";
+  } else {
+    document.getElementById('cobertura-heading').textContent = "2. Elige tu Combo de Cobertura";
+    state.currentInclusions = INCLUSIONS[state.subtype][state.mode];
+    const eventRates = RATES[state.subtype];
+    
+    if (state.comboType === 'express') {
+      document.getElementById('express-hours-selector').classList.remove('hidden');
+      hrs = state.expressHrs;
+      ratePorHora = eventRates[state.mode][hrs];
+    } else if (state.comboType === 'custom') {
+      document.getElementById('custom-slider').classList.remove('hidden');
+      hrs = state.customHrs;
+      ratePorHora = eventRates[state.mode].base;
+    } else {
+      hrs = 3;
+      ratePorHora = eventRates[state.mode].base;
+    }
+    
+    totalCalculated = hrs * ratePorHora;
+
+    document.getElementById('combo-express').classList.toggle('selected', state.comboType === 'express');
+    document.getElementById('combo-3').classList.toggle('selected', state.comboType === 'standard');
+    document.getElementById('combo-custom').classList.toggle('selected', state.comboType === 'custom');
+    
+    document.getElementById('p-combo1').textContent = `$${eventRates[state.mode][state.expressHrs]} / hora`;
+    document.getElementById('p-combo3').textContent = `$${eventRates[state.mode].base} / hora`;
+    document.getElementById('p-combo-custom').textContent = `$${eventRates[state.mode].base} / hora`;
+  }
+
+  // Renderizar las inclusiones correctas
   state.currentInclusions.forEach(text => {
     const li = document.createElement('li');
     li.innerHTML = text;
     listContainer.appendChild(li);
   });
 
-  const currentExpressRate = RATES[state.mode][state.expressHrs];
-  document.getElementById('p-combo1').textContent = `$${currentExpressRate} / hora`;
-  document.getElementById('p-combo3').textContent = `$${RATES[state.mode].base} / hora`;
-  document.getElementById('p-combo-custom').textContent = `$${RATES[state.mode].base} / hora`;
-
-  let hrs = 3;
-  let ratePorHora = RATES[state.mode].base;
-
-  if (state.comboType === 'express') {
-    hrs = state.expressHrs;
-    ratePorHora = RATES[state.mode][hrs];
-  } else if (state.comboType === 'custom') {
-    hrs = state.customHrs;
-    ratePorHora = RATES[state.mode].base;
-  } else {
-    hrs = 3;
-    ratePorHora = RATES[state.mode].base;
-  }
-
   state.exactHrs = hrs;
-  const totalCalculado = hrs * ratePorHora;
-  const precioBaseUnaHora = RATES[state.mode][1]; 
-  const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
-  const ahorroTotal = costoSiFueranHorasSueltas - totalCalculado;
-
-  state.price = totalCalculado;
+  state.price = totalCalculated;
+  
+  let nombreResumenEvento = state.subtype === 'cumple' ? 'Cumpleaños' : 'Quinceañera';
+  if (esBoda) nombreResumenEvento = state.bodaTipo === 'civil' ? 'Boda Civil' : 'Boda Eclesiástica';
+  
   const nombreModalidad = state.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video';
-  state.details = `Cumpleaños: ${nombreModalidad} x ${hrs} horas.`;
+  state.details = `${nombreResumenEvento}: ${nombreModalidad} x ${hrs} horas.`;
 
+  // Cálculo de banner de descuento por volumen (Solo aplica para Cumples y Quinces de 3 horas o más)
   const discountArea = document.getElementById('discount-area');
-  if (ahorroTotal > 0) {
-    discountArea.innerHTML = `
-      <div class="discount-badge">
-        🏷️ ¡Excelente elección! Estás ahorrando <strong>$${ahorroTotal} USD</strong> con esta tarifa especial por volumen.
-      </div>
-    `;
+  if (!esBoda) {
+    const precioBaseUnaHora = RATES[state.subtype][state.mode][1]; 
+    const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
+    const ahorroTotal = costoSiFueranHorasSueltas - totalCalculated;
+
+    if (ahorroTotal > 0) {
+      discountArea.innerHTML = `
+        <div class="discount-badge">
+          🏷️ ¡Excelente elección! Estás ahorrando <strong>$${ahorroTotal} USD</strong> con esta tarifa especial por volumen.
+        </div>
+      `;
+    } else {
+      discountArea.innerHTML = '';
+    }
   } else {
     discountArea.innerHTML = '';
   }
 
+  // Modificar la fila de precio según sea paquete o valor por hora
+  const filaPrecioHTML = esPrecioFijo 
+    ? `<div class="sum-row"><span>Esquema de precios</span><span>Tarifa de Paquete Cerrado</span></div>`
+    : `<div class="sum-row"><span>Precio especial por hora</span><span>$${ratePorHora} / h</span></div>`;
+
   document.getElementById('cumple-sum').innerHTML = `
     <div class="sum-row"><span>Modalidad elegida</span><strong>${nombreModalidad}</strong></div>
-    <div class="sum-row"><span>Precio especial por hora</span><span>$${ratePorHora} / h</span></div>
+    ${filaPrecioHTML}
     <div class="sum-row"><span>Tiempo de cobertura</span><span>${hrs} ${hrs === 1 ? 'hora' : 'horas'}</span></div>
-    <div class="sum-row sum-total"><span>Total Presupuesto</span><span class="amount">$${totalCalculado}</span></div>
+    <div class="sum-row sum-total"><span>Total Presupuesto</span><span class="amount">$${totalCalculated}</span></div>
   `;
 }
 
@@ -715,14 +856,12 @@ function sendWA(actionType) {
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 
-// === NUEVA FUNCIÓN: COPIAR AL PORTAPAPELES CON TEXTO DETALLADO ===
 function copiarCotizacion() {
   const name = document.getElementById('inp-nombre').value || 'Cliente';
   const eventName = document.getElementById('inp-evento').value || 'Por definir';
   const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
   const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil (Ecuador)';
   
-  // Limpiar etiquetas <strong> para texto plano impecable
   const descripcionesPlanas = state.currentInclusions.map(text => {
     return "✨ " + text.replace(/<\/?strong>/g, '');
   }).join("\n");
