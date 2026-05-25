@@ -6,6 +6,7 @@
 <title>Cotizador — LemonFilmz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -476,6 +477,8 @@
     <button class="btn btn-wa" onclick="sendWA('agenda')">🚀 Agendar Evento por WhatsApp</button>
     <button class="btn btn-portfolio" onclick="sendWA('portfolio')" style="margin-top:10px;">✨ Solicitar Portafolio Completo</button>
     
+    <button class="btn btn-portfolio" onclick="downloadPDF()" style="margin-top:10px; background: #fffcee; border-color: #fbe6a2;">📄 Descargar Cotización en PDF</button>
+    
     <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1.5rem">Nueva cotización</button>
   </div>
 
@@ -690,6 +693,72 @@ function sendWA(actionType) {
   }
   
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
+}
+
+// FUNCIÓN PARA GENERAR Y DESCARGAR EL PDF CON ESTILO LIMPIO
+function downloadPDF() {
+  const name = document.getElementById('inp-nombre').value || 'Cliente';
+  const eventName = document.getElementById('inp-evento').value || 'Evento';
+  const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
+  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil';
+  
+  const element = document.createElement('div');
+  element.style.padding = '40px';
+  element.style.fontFamily = "'Instrument Sans', sans-serif";
+  element.style.color = '#1e1e1c';
+  element.style.backgroundColor = '#ffffff';
+
+  element.innerHTML = `
+    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e4e4de; padding-bottom: 20px;">
+      <h1 style="font-family: 'Fraunces', serif; font-size: 2.5rem; margin: 0; font-weight: 300;">Lemon<em style="font-style: italic; color: #2a6b4a;">Filmz</em></h1>
+      <p style="font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: #a8a8a2; margin-top: 5px;">Fotografía & Videografía · Ecuador</p>
+    </div>
+    
+    <h2 style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 20px; color: #0f0f0e;">Presupuesto de Servicio</h2>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 0.9rem;">
+      <tr style="border-bottom: 1px solid #e4e4de;">
+        <td style="padding: 10px 0; color: #6b6b66; width: 35%;">Cliente:</td>
+        <td style="padding: 10px 0; font-weight: 500;">${name}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #e4e4de;">
+        <td style="padding: 10px 0; color: #6b6b66;">Motivo / Evento:</td>
+        <td style="padding: 10px 0; font-weight: 500;">${eventName}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #e4e4de;">
+        <td style="padding: 10px 0; color: #6b6b66;">Fecha Planificada:</td>
+        <td style="padding: 10px 0; font-weight: 500;">${eventDate}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #e4e4de;">
+        <td style="padding: 10px 0; color: #6b6b66;">Ubicación / Notas:</td>
+        <td style="padding: 10px 0; font-weight: 500;">${eventLocation}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #e4e4de;">
+        <td style="padding: 10px 0; color: #6b6b66;">Detalle de Cobertura:</td>
+        <td style="padding: 10px 0; font-weight: 500;">${state.details}</td>
+      </tr>
+    </table>
+    
+    <div style="background: #f7f7f4; border: 1px solid #e4e4de; border-radius: 12px; padding: 20px; text-align: right; margin-top: 20px;">
+      <span style="font-size: 1rem; color: #0f0f0e; font-weight: 500; display: block; margin-bottom: 5px;">Inversión Total Estimada</span>
+      <span style="font-family: 'Fraunces', serif; font-size: 2.2rem; color: #2a6b4a; font-weight: bold;">$${state.price} USD</span>
+    </div>
+    
+    <div style="margin-top: 40px; font-size: 0.75rem; color: #6b6b66; line-height: 1.5; border-top: 1px dashed #e4e4de; padding-top: 15px;">
+      <p>* Las tarifas mostradas aplican exclusivamente dentro de la ciudad de Guayaquil. Eventos fuera del perímetro urbano o en otras provincias están sujetos a recargos de movilización y viáticos.</p>
+      <p style="margin-top: 5px;">* Presupuesto válido por 15 días a partir de la fecha de generación.</p>
+    </div>
+  `;
+
+  const opt = {
+    margin:       10,
+    filename:     `Cotizacion_LemonFilmz_${name.replace(/\s+/g, '_')}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save();
 }
 </script>
 
