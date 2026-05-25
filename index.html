@@ -537,13 +537,31 @@ function goStep(n) {
     if (i < n) document.getElementById('pd'+i).textContent = '✓';
     else document.getElementById('pd'+i).textContent = i;
   });
+  
+  // Si regresas al Paso 2, nos aseguramos de mostrar el selector de eventos y ocultar los formularios específicos
+  if (n === 2 && state.service === 'social') {
+    document.getElementById('sub-social').classList.remove('hidden');
+    document.getElementById('det-cumple').classList.add('hidden');
+    document.getElementById('det-generic').classList.add('hidden');
+  }
+  
   if(n === 4) renderFinal();
 }
 
 function pickService(s) {
   state.service = s;
+  // Resetear subtipos al cambiar de servicio principal
+  state.subtype = ''; 
   goStep(2);
-  document.getElementById('sub-social').classList.toggle('hidden', s !== 'social');
+  
+  if (s === 'social') {
+    document.getElementById('sub-social').classList.remove('hidden');
+    document.getElementById('det-cumple').classList.add('hidden');
+    document.getElementById('det-generic').classList.add('hidden');
+  } else {
+    document.getElementById('sub-social').classList.add('hidden');
+    document.getElementById('det-generic').classList.remove('hidden');
+  }
 }
 
 function pickSubtype(t) {
