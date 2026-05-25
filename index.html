@@ -79,8 +79,8 @@
   .mode-btn.on { border-color: var(--accent-dark); background: #f0f7eb; }
   .inclusion-box { background: #fafafa; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 1.5rem; }
   .inclusion-list { list-style: none; padding-top: 8px; }
-  .inclusion-list li { font-size: 0.8rem; line-height: 1.5; margin-bottom: 4px; display: flex; gap: 6px; }
-  .inclusion-list li::before { content: "•"; color: var(--accent-dark); }
+  .inclusion-list li { font-size: 0.85rem; line-height: 1.5; margin-bottom: 6px; display: flex; gap: 6px; color: var(--ink); }
+  .inclusion-list li::before { content: "✨"; font-size: 0.8rem; }
 
   /* Inputs */
   .input-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; display: block; text-transform: uppercase; }
@@ -98,7 +98,10 @@
 
   .summary-box { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--line); margin-top: 1rem; }
   .sum-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid var(--line); }
-  .sum-total { font-weight: 700; font-size: 1.2rem; color: var(--accent-dark); border: none; padding-top: 10px; }
+  .sum-total { font-weight: 700; font-size: 1.3rem; color: var(--black); border: none; padding-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+
+  /* El clásico tag de ahorro orgánico */
+  .ahorro-tag { background: #e6f4ea; color: #137333; font-size: 0.85rem; padding: 10px 14px; border-radius: 8px; font-weight: 600; text-align: center; margin-top: 10px; border: 1px dashed #137333; }
 
   .hidden { display: none !important; }
 
@@ -109,7 +112,7 @@
   .modal-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px; }
   .modal-grid img { width:100%; border-radius:10px; }
 
-  /* --- ESTILOS DEL PDF REPLICADO --- */
+  /* --- ESTILOS DEL PDF REPLICADO (Mantiene formalidad) --- */
   #pdf-render { width: 210mm; min-height: 297mm; background: #fff; position: relative; color: #333; font-family: 'Helvetica', sans-serif; display: none; }
   .p-header-bg { position: absolute; top:0; right:0; width: 40%; height: 160px; background: var(--accent); border-radius: 0 0 0 100px; z-index: 0; }
   .p-content { position: relative; z-index: 1; padding: 50px; }
@@ -185,9 +188,9 @@
       </div>
 
       <div class="inclusion-box">
-        <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase">Inclusiones:</div>
+        <div style="font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom: 4px;">¿Qué incluye este servicio?</div>
         <ul class="inclusion-list" id="inc-list"></ul>
-        <div style="color:var(--accent-dark); font-size:0.8rem; cursor:pointer; font-weight:600; margin-top:8px" onclick="openMod()">✨ Ver estilo de fotos</div>
+        <div style="color:var(--accent-dark); font-size:0.8rem; cursor:pointer; font-weight:600; margin-top:10px; text-align:right" onclick="openMod()">✨ Ver galería de muestras</div>
       </div>
 
       <p class="section-heading">2. Combo de Cobertura</p>
@@ -370,17 +373,17 @@ function upUI() {
   state.discount = state.subtotal - state.price;
   state.exactH = curH;
 
+  // Textos súper orgánicos que conectan de verdad
   const inc = document.getElementById('inc-list');
   inc.innerHTML = (state.mode === 'foto') 
-    ? '<li>Fotos ilimitadas capturando cada detalle</li><li>Enfoque en momentos espontáneos y poses</li><li>Revelado digital y corrección de color</li>'
-    : '<li>Todo lo de fotografía incluido</li><li>Recap Cinematográfico Corto (Redes)</li><li>Video Resumen Documental Extendido</li>';
+    ? '<li>Fotos ilimitadas (hacemos click hasta que no quede nadie en la pista)</li><li>Capturamos las lágrimas de tu mamá y las locuras de tus amigos</li><li>Posa si quieres, si no, te cazamos de forma espontánea</li><li>Todas las fotos editadas con estilo único listas para compartir</li>'
+    : '<li>Todo lo de fotos incluido (no te pierdes de nada)</li><li>Recap Dinámico brutal para que presumas en TikTok / Reels</li><li>Video extendido con todo el protocolo, el pastel y el baile de los tíos</li>';
 
-  let txtAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:600;"><span>🎉 Te estás ahorrando:</span><span>-$${state.discount}</span></div>` : '';
+  let tagAhorro = state.discount > 0 ? `<div class="ahorro-tag">🎉 ¡Brutal! Te estás ahorrando $${state.discount} por elegir combo</div>` : '';
 
   document.getElementById('sum-box').innerHTML = `
-    <div class="sum-row"><span>Valor de lista (${curH}h):</span><span>$${state.subtotal}</span></div>
-    ${txtAhorro}
-    <div class="sum-total">Total Estimado: $${state.price}</div>
+    <div class="sum-total"><span>Total Estimado:</span> <span>$${state.price}</span></div>
+    ${tagAhorro}
   `;
 }
 
@@ -389,16 +392,15 @@ function closeMod() { document.getElementById('modal').classList.remove('open');
 
 function renderF() {
   const f = document.getElementById('i-fec').value;
-  let linesAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:500;"><span>🎉 Te estás ahorrando:</span><strong>-$${state.discount}</strong></div>` : '';
+  let tagAhorroFinal = state.discount > 0 ? `<div class="ahorro-tag" style="margin-top:12px;">🎉 ¡Brutal! Te estás ahorrando $${state.discount} en total</div>` : '';
   
   document.getElementById('final-sum').innerHTML = `
-    <div class="sum-row"><span>Evento:</span><strong>${state.sub.toUpperCase()}</strong></div>
-    <div class="sum-row"><span>Fecha solicitada:</span><strong>${f || 'Pendiente'}</strong></div>
-    <div class="sum-row"><span>Subtotal:</span><span>$${state.subtotal}</span></div>
-    ${linesAhorro}
-    <div class="sum-total">Total Neto: $${state.price}</div>
-    <div style="font-size:0.75rem; color:#b37d00; background:#fff9e6; border:1px solid #fbe6a2; padding:10px; border-radius:8px; margin-top:12px; text-align:center; font-weight:500;">
-      📅 Agenda no congelada. Es necesario verificar disponibilidad en WhatsApp.
+    <div class="sum-row"><span>Tipo de Evento:</span><strong>${state.sub.toUpperCase()}</strong></div>
+    <div class="sum-row"><span>Fecha seleccionada:</span><strong>${f || 'Por acordar'}</strong></div>
+    <div class="sum-total" style="border-top: 1px solid var(--line); margin-top:8px; padding-top:12px;"><span>Inversión Total:</span><strong>$${state.price}</strong></div>
+    ${tagAhorroFinal}
+    <div style="font-size:0.75rem; color:#b37d00; background:#fff9e6; border:1px solid #fbe6a2; padding:12px; border-radius:8px; margin-top:14px; text-align:center; font-weight:500; line-height:1.4;">
+      📅 La agenda se mueve rápido. Consulta disponibilidad en WhatsApp para congelar tu fecha antes de que te la ganen.
     </div>
   `;
 }
