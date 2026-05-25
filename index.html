@@ -194,9 +194,15 @@
 
       <p class="section-heading">2. Combo de Cobertura</p>
       <div class="grid-2">
-        <div class="opt" id="c-express" onclick="setC('express')">Combo Express<div class="opt-price" id="pr-exp">$70/h</div></div>
+        <div class="opt" id="c-express" onclick="setC('express')">Combo Express (1-2h)<div class="opt-price" id="pr-exp">$70/h</div></div>
         <div class="opt" id="c-std" onclick="setC('std')">Estándar (3h) ⭐<div class="opt-price" id="pr-std">$50/h</div></div>
         <div class="opt" id="c-prem" onclick="setC('prem')" style="grid-column: span 2;">Combo Premium (4h+)<div class="opt-price" id="pr-prem">$50/h</div></div>
+      </div>
+
+      <div id="express-slider-wrap" class="hidden" style="margin-top:15px; background:var(--surface); padding:15px; border-radius:12px;">
+        <label class="input-label">Horas Express</label>
+        <input type="range" min="1" max="2" value="1" id="range-express-h" oninput="upExpressH(this.value)">
+        <div style="text-align:right; font-weight:700; color:var(--accent-dark)" id="val-express-h">1 Hora</div>
       </div>
 
       <div id="slider-wrap" class="hidden" style="margin-top:15px; background:var(--surface); padding:15px; border-radius:12px;">
@@ -318,7 +324,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-pzimIFn
 const WA_NUM = '593995007148';
 
 const state = {
-  mode: 'foto', combo: 'std', h: 3, price: 0, subtotal: 0, discount: 0,
+  mode: 'foto', combo: 'std', h: 3, expressH: 1, price: 0, subtotal: 0, discount: 0,
   rates: { foto: {1:70, 2:60, base:50}, video: {1:90, 2:80, base:70} }
 };
 
@@ -353,26 +359,30 @@ function setC(c) {
   document.getElementById('c-express').classList.toggle('selected', c==='express');
   document.getElementById('c-std').classList.toggle('selected', c==='std');
   document.getElementById('c-prem').classList.toggle('selected', c==='prem');
+  
+  // Mostrar u ocultar los rangos adecuados según la selección
+  document.getElementById('express-slider-wrap').classList.toggle('hidden', c!=='express');
   document.getElementById('slider-wrap').classList.toggle('hidden', c!=='prem');
   upUI();
 }
 
 function upH(v) { state.h = parseInt(v); document.getElementById('val-h').textContent = v+' Horas'; upUI(); }
+function upExpressH(v) { state.expressH = parseInt(v); document.getElementById('val-express-h').textContent = v + (parseInt(v)===1 ? ' Hora' : ' Horas'); upUI(); }
 
 function upUI() {
   const r = state.rates[state.mode];
   
-  // Actualización dinámica de los textos de los botones de combo
   document.getElementById('pr-exp').textContent = `$${r[1]}/h`;
   document.getElementById('pr-std').textContent = `$${r.base}/h`;
   document.getElementById('pr-prem').textContent = `$${r.base}/h`;
 
   let curH = 3;
-  if(state.combo === 'express') curH = 1; 
+  if(state.combo === 'express') curH = state.expressH; 
   else if(state.combo === 'prem') curH = state.h;
 
   const rate = (curH === 1) ? r[1] : (curH === 2) ? r[2] : r.base;
   
+  // El cálculo de lista se hace con la tarifa máxima por hora para reflejar el ahorro real
   state.subtotal = curH * r[1];
   state.price = curH * rate;
   state.discount = state.subtotal - state.price;
