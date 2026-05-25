@@ -739,6 +739,26 @@ function renderFinal() {
     <div class="sum-row"><span>Fecha seleccionada</span><strong>${f_fecha}</strong></div>
     <div class="sum-row sum-total"><span>Inversión</span><span class="amount">$${state.price}</span></div>
   `;
+
+  // === NUEVO: Renderizado automático de viñetas para el HTML del PDF ===
+  const pdfListContainer = document.getElementById('pdf-bullets-list');
+  if (pdfListContainer) {
+    pdfListContainer.innerHTML = '';
+    
+    // Combina foto + video (quitando el título repetido) si es combo, o solo foto
+    let bulletsData = state.mode === 'fotovideo' 
+      ? [...INCLUSIONS.foto, ...INCLUSIONS.fotovideo.slice(1)] 
+      : [...INCLUSIONS.foto];
+    
+    bulletsData.forEach(text => {
+      const li = document.createElement('li');
+      li.style.marginBottom = '6px';
+      li.innerHTML = text;
+      pdfListContainer.appendChild(li);
+    });
+  }
+  // ===================================================================
+
   guardarDatos();
 }
 
@@ -776,7 +796,6 @@ function sendWA(actionType) {
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 
-// NUEVA FUNCIÓN OPTIMIZADA CON TU DISEÑO ORIGINAL, EL LOGO CARGADO Y CÁLCULOS MATEMÁTICOS PERFECTOS
 function downloadPDF() {
   const name = document.getElementById('inp-nombre').value || 'Cliente';
   const eventName = document.getElementById('inp-evento').value || 'Evento';
@@ -799,11 +818,6 @@ function downloadPDF() {
   document.getElementById('pdf-m-sub').textContent = `$${state.subtotal.toFixed(2)}`;
   document.getElementById('pdf-m-desc').textContent = `-$${state.discount.toFixed(2)}`;
   document.getElementById('pdf-m-total').textContent = `$${state.price.toFixed(2)}`;
-
-  const bullets = (state.mode === 'foto') 
-    ? "Se realiza cobertura de fotos aprovechando cada momento relevante del evento. Se captan momentos espontáneos, protocolo formal, fotos de mesa e interacciones. Todo el material digital se entrega editado con corrección de color profesional de autor."
-    : "Se realiza cobertura híbrida en alta definición. Incluye la captura ilimitada de fotografía fija junto con la grabación de clips de video para la manufactura de un Recap Corto Dinámico (formato vertical/horizontal de alto impacto) y un video extendido cronológico.";
-  document.getElementById('pdf-bullets').textContent = bullets;
 
   // Renderizar y guardar usando html2pdf
   const el = document.getElementById('pdf-render');
