@@ -6,6 +6,7 @@
 <title>Cotizador — LemonFilmz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -305,6 +306,8 @@
   .btn-wa { background: var(--wa); color: #fff; }
   .btn-portfolio { background: var(--white); color: var(--black); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; }
   .btn-portfolio:hover { background: var(--surface); border-color: #aaa; }
+  .btn-pdf { background: #4a5568; color: #fff; font-weight: 500; }
+  .btn-pdf:hover { background: #2d3748; }
   .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
 
   .hidden { display: none !important; }
@@ -473,6 +476,7 @@
     <div class="summary-box" id="final-summary"></div>
     
     <button class="btn btn-wa" onclick="sendWA('agenda')">🚀 Agendar Evento por WhatsApp</button>
+    <button class="btn btn-pdf" onclick="generarPDF()" style="margin-top:10px;">📋 Descargar Cotización en PDF</button>
     <button class="btn btn-portfolio" onclick="sendWA('portfolio')" style="margin-top:10px;">✨ Solicitar Portafolio Completo</button>
     
     <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1.5rem">Nueva cotización</button>
@@ -503,7 +507,7 @@ const WA_NUMBER = '593995007148';
 const state = {
   step: 1, service: '', subtype: '', mode: 'foto', 
   comboType: 'standard', expressHrs: 1, customHrs: 4,      
-  price: 0, details: '', exactHrs: 3
+  price: 0, details: '', exactHrs: 3, ratePorHora: 50
 };
 
 const RATES = {
@@ -614,6 +618,7 @@ function updateCumpleUI() {
   }
 
   state.exactHrs = hrs;
+  state.ratePorHora = ratePorHora;
   const totalCalculado = hrs * ratePorHora;
   const precioBaseUnaHora = RATES[state.mode][1]; 
   const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
@@ -671,6 +676,85 @@ function guardarDatos() {
     total: state.price
   };
   fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+}
+
+function generarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  const nombre = document.getElementById('inp-nombre').value || 'Cliente';
+  const evento = document.getElementById('inp-evento').value || 'Celebración';
+  const fecha = document.getElementById('inp-fecha').value || 'Por definir';
+  const nota = document.getElementById('inp-nota').value || 'Ninguna';
+
+  // Diseño minimalista y elegante (Paleta LemonFilmz)
+  doc.setFillColor(15, 15, 14); // Var Black
+  doc.rect(0, 0, 210, 35, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("LemonFilmz", 20, 22);
+  
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text("FOTOGRAFÍA & VIDEOGRAFÍA · ECUADOR", 20, 28);
+  
+  // Título del documento
+  doc.setTextColor(15, 15, 14);
+  doc.setFontSize(16);
+  doc.setFont("Helvetica", "bold");
+  doc.text("PRESUPUESTO ESTIMADO", 20, 55);
+  
+  // Información del Cliente
+  doc.setFontSize(11);
+  doc.text("INFORMACIÓN DEL EVENTO", 20, 70);
+  doc.line(20, 72, 190, 72);
+  
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(30, 30, 28);
+  doc.text(`Cliente: ${nombre}`, 20, 80);
+  doc.text(`Motivo: ${evento}`, 20, 87);
+  doc.text(`Fecha: ${fecha}`, 20, 94);
+  doc.text(`Ubicación / Notas: ${nota}`, 20, 101, { maxWidth: 170 });
+
+  // Detalles del servicio cotizado
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text("DESGLOSE DEL SERVICIO", 20, 120);
+  doc.line(20, 122, 190, 122);
+  
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text("Concepto", 20, 130);
+  doc.text("Cantidad", 120, 130);
+  doc.text("Precio U.", 150, 130);
+  doc.text("Subtotal", 175, 130);
+  doc.line(20, 132, 190, 132);
+  
+  const tipoServicio = state.mode === 'foto' ? 'Servicio Profesional de Fotografía' : 'Combo Audiovisual: Foto + Video';
+  doc.text(tipoServicio, 20, 142);
+  doc.text(`${state.exactHrs} h`, 123, 142);
+  doc.text(`$${state.ratePorHora}`, 152, 142);
+  doc.text(`$${state.price}`, 177, 142);
+  
+  // Total
+  doc.line(20, 150, 190, 150);
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Total Estimado:", 130, 160);
+  doc.setTextColor(42, 107, 74); // Verde Acicate
+  doc.text(`$${state.price} USD`, 168, 160);
+  
+  // Términos
+  doc.setTextColor(107, 107, 102);
+  doc.setFontSize(8.5);
+  doc.setFont("Helvetica", "normal");
+  doc.text("* Tarifas válidas únicamente para la ciudad de Guayaquil.", 20, 185);
+  doc.text("* Este documento representa un presupuesto estimado y no asegura la reserva de la fecha hasta el abono correspondiente.", 20, 191);
+  
+  doc.save(`Cotizacion_LemonFilmz_${nombre.replace(/\s+/g, '_')}.pdf`);
 }
 
 function sendWA(actionType) {
