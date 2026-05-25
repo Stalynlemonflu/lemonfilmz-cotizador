@@ -20,7 +20,7 @@
     --line: #e4e4de;
     --surface: #f7f7f4;
     --white: #ffffff;
-    --accent: #89c961; /* Verde Limón de tu logo */
+    --accent: #89c961; /* Verde Limón */
     --accent-dark: #2a6b4a;
     --wa: #25d366;
     --radius: 12px;
@@ -73,7 +73,7 @@
   .opt-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
   .opt-price { font-size: 0.85rem; color: var(--accent-dark); font-weight: 600; margin-top: 6px; }
 
-  /* Modalidad y Inclusiones */
+  /* Modalidad e Inclusiones */
   .mode-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
   .mode-btn { border: 1.5px solid var(--line); border-radius: var(--radius); padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
   .mode-btn.on { border-color: var(--accent-dark); background: #f0f7eb; }
@@ -109,7 +109,7 @@
   .modal-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px; }
   .modal-grid img { width:100%; border-radius:10px; }
 
-  /* --- ESTILOS DEL PDF (ESTRUCTURA IDÉNTICA A TU IMAGEN) --- */
+  /* --- ESTILOS DEL PDF REPLICADO --- */
   #pdf-render { width: 210mm; min-height: 297mm; background: #fff; position: relative; color: #333; font-family: 'Helvetica', sans-serif; display: none; }
   .p-header-bg { position: absolute; top:0; right:0; width: 40%; height: 160px; background: var(--accent); border-radius: 0 0 0 100px; z-index: 0; }
   .p-content { position: relative; z-index: 1; padding: 50px; }
@@ -123,17 +123,19 @@
   .p-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
   .p-table th { text-align: left; padding: 12px 15px; border-bottom: 2px solid #eee; color: #888; font-size: 13px; text-transform: uppercase; }
   .p-table td { padding: 20px 15px; vertical-align: top; border-bottom: 1px solid #f2f2f2; }
-  .p-row-gray { background: #fafafa; }
   
-  .p-footer-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; margin-top: 20px; }
-  .p-bank-box { font-size: 12px; line-height: 1.8; color: #555; }
-  .p-bank-title { font-weight: bold; color: #000; font-size: 14px; margin-bottom: 10px; }
+  .p-footer-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; margin-top: 20px; }
+  
+  /* Alerta de Agenda en el PDF */
+  .p-notice-box { background: #fff9e6; border: 1px dashed #f5c242; padding: 15px; border-radius: 10px; font-size: 12px; line-height: 1.6; color: #66501a; }
+  .p-notice-box strong { color: #b37d00; display: block; font-size: 13px; margin-bottom: 4px; }
+  
   .p-math-box { text-align: right; }
-  .p-math-row { display: flex; justify-content: flex-end; gap: 30px; margin-bottom: 8px; font-size: 16px; }
+  .p-math-row { display: flex; justify-content: flex-end; gap: 30px; margin-bottom: 8px; font-size: 15px; color: #555; }
+  .p-discount-line { color: #2a6b4a; font-weight: 500; }
   .p-total-big { font-size: 28px; font-weight: bold; color: #2a6b4a; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
   
-  .p-ig { position: absolute; bottom: 50px; left: 50px; font-size: 12px; color: #888; display: flex; align-items: center; gap: 5px; }
-
+  .p-ig { position: absolute; bottom: 50px; left: 50px; font-size: 12px; color: #888; }
 </style>
 </head>
 <body>
@@ -271,8 +273,8 @@
     
     <div class="p-meta">
       <strong>Guayaquil - Ecuador</strong><br>
-      Evento: <span id="pdf-fec"></span><br>
-      <span id="pdf-inv">100 personas</span>
+      Fecha del Evento: <span id="pdf-fec"></span><br>
+      Aforo Estimado: <span id="pdf-inv">100 personas</span>
     </div>
 
     <table class="p-table">
@@ -280,14 +282,14 @@
         <tr>
           <th style="width: 60%">Descripcion</th>
           <th style="text-align: center;">Cantidad</th>
-          <th style="text-align: right;">Total</th>
+          <th style="text-align: right;">Total Base</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr class="p-row-gray">
           <td>
             <strong id="pdf-serv-tit">Cobertura boda 8 horas</strong><br>
-            <span id="pdf-pers" style="font-size: 11px; color:#666">2 Personas (fotografo y videografo)</span><br><br>
+            <span id="pdf-pers" style="font-size: 11px; color:#666">2 Personas (fotógrafo y videógrafo)</span><br><br>
             <div id="pdf-bullets" style="font-size: 10px; line-height: 1.5; color: #555;"></div>
           </td>
           <td style="text-align: center; font-weight: bold;" id="pdf-cant">8 horas</td>
@@ -297,24 +299,20 @@
     </table>
 
     <div class="p-footer-grid">
-      <div class="p-bank-box">
-        <div class="p-bank-title">Datos para el pago:</div>
-        <strong>Nombre:</strong> Stalyn Andre Garcia Yagual<br>
-        <strong>Cedula:</strong> 0954256534<br>
-        <strong>Correo:</strong> lemonfilmz.contact@gmail.com<br>
-        <strong>Whatsapp:</strong> +593 962878800<br>
-        <strong>Tipo de cuenta:</strong> Ahorros Banco Guayaquil<br>
-        <strong>#Cuenta:</strong> 0042752190
+      <div class="p-notice-box">
+        <strong>⚠️ VERIFICACIÓN DE DISPONIBILIDAD REQUERIDA</strong>
+        Esta cotización refleja los valores oficiales y promocionales de LemonFilmz para la duración seleccionada. Sin embargo, <strong>la fecha NO se encuentra reservada automáticamente</strong>.<br><br>
+        Por favor, póngase en contacto a través de WhatsApp para verificar la disponibilidad de nuestra agenda para su día. Las fechas se separan estrictamente en orden de confirmación del anticipo.
       </div>
 
       <div class="p-math-box">
         <div class="p-math-row"><span>Sub-Total:</span> <span id="pdf-m-sub">$600,00</span></div>
-        <div class="p-math-row"><span>Descuento:</span> <span>-$0,00</span></div>
-        <div class="p-total-big">Total: <span id="pdf-m-total">$600,00</span></div>
+        <div class="p-math-row p-discount-line"><span>Descuento Especial:</span> <span id="pdf-m-desc">-$0,00</span></div>
+        <div class="p-total-big">Total Neto: <span id="pdf-m-total">$600,00</span></div>
       </div>
     </div>
 
-    <div class="p-ig">📸 @stalyn_lemonfilmz</div>
+    <div class="p-ig">📸 Instagram: @stalyn_lemonfilmz</div>
   </div>
 </div>
 
@@ -323,7 +321,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-pzimIFn
 const WA_NUM = '593995007148';
 
 const state = {
-  mode: 'foto', combo: 'std', h: 3, price: 0, 
+  mode: 'foto', combo: 'std', h: 3, price: 0, subtotal: 0, discount: 0,
   rates: { foto: {1:70, 2:60, base:50}, video: {1:90, 2:80, base:70} }
 };
 
@@ -371,7 +369,11 @@ function upUI() {
   else if(state.combo === 'prem') curH = state.h;
 
   const rate = (curH === 1) ? r[1] : (curH === 2) ? r[2] : r.base;
-  state.price = curH * rate;
+  
+  // Cálculo matemático con anclaje psicológico
+  state.subtotal = curH * r[1]; // Lo que costaría por horas individuales premium ($70 o $90)
+  state.price = curH * rate;    // Precio real aplicado
+  state.discount = state.subtotal - state.price; // El ahorro directo
   state.exactH = curH;
 
   const inc = document.getElementById('inc-list');
@@ -379,9 +381,12 @@ function upUI() {
     ? '<li>Fotos ilimitadas capturando cada detalle</li><li>Enfoque en momentos espontáneos y poses</li><li>Revelado digital y corrección de color</li>'
     : '<li>Todo lo de fotografía incluido</li><li>Recap Cinematográfico Corto (Redes)</li><li>Video Resumen Documental Extendido</li>';
 
+  let txtAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:600;"><span>🎉 Descuento por Combo:</span><span>-$${state.discount}</span></div>` : '';
+
   document.getElementById('sum-box').innerHTML = `
-    <div class="sum-row"><span>Cobertura ${curH}h (${state.mode})</span><span>$${state.price}</span></div>
-    <div class="sum-total">Total: $${state.price}</div>
+    <div class="sum-row"><span>Valor de lista (${curH}h):</span><span>$${state.subtotal}</span></div>
+    ${txtAhorro}
+    <div class="sum-total">Total Estimado: $${state.price}</div>
   `;
 }
 
@@ -390,41 +395,51 @@ function closeMod() { document.getElementById('modal').classList.remove('open');
 
 function renderF() {
   const f = document.getElementById('i-fec').value;
+  let linesAhorro = state.discount > 0 ? `<div class="sum-row" style="color:var(--accent-dark); font-weight:500;"><span>Ahorro Especial:</span><strong>-$${state.discount}</strong></div>` : '';
+  
   document.getElementById('final-sum').innerHTML = `
-    <div class="sum-row"><span>Evento:</span><strong>${state.sub}</strong></div>
-    <div class="sum-row"><span>Fecha:</span><strong>${f || 'Pendiente'}</strong></div>
-    <div class="sum-row sum-total">Total: $${state.price}</div>
+    <div class="sum-row"><span>Evento:</span><strong>${state.sub.toUpperCase()}</strong></div>
+    <div class="sum-row"><span>Fecha solicitada:</span><strong>${f || 'Pendiente'}</strong></div>
+    <div class="sum-row"><span>Subtotal:</span><span>$${state.subtotal}</span></div>
+    ${linesAhorro}
+    <div class="sum-total">Total Neto: $${state.price}</div>
+    <div style="font-size:0.75rem; color:#b37d00; background:#fff9e6; border:1px solid #fbe6a2; padding:10px; border-radius:8px; margin-top:12px; text-align:center; font-weight:500;">
+      📅 Agenda no congelada. Es necesario verificar disponibilidad en WhatsApp.
+    </div>
   `;
 }
 
 function genPDF() {
   const n = document.getElementById('i-nom').value || 'Cliente';
   document.getElementById('pdf-nom').textContent = n;
-  document.getElementById('pdf-fec').textContent = document.getElementById('i-fec').value;
-  document.getElementById('pdf-inv').textContent = document.getElementById('i-inv').value || 'Invitados por definir';
+  document.getElementById('pdf-fec').textContent = document.getElementById('i-fec').value || 'Por acordar';
+  document.getElementById('pdf-inv').textContent = document.getElementById('i-inv').value || 'Por definir';
   
-  const tit = `Cobertura ${state.sub} ${state.exactH} horas`;
+  const tit = `Cobertura ${state.sub.toUpperCase()} — ${state.exactH} Horas`;
   document.getElementById('pdf-serv-tit').textContent = tit;
-  document.getElementById('pdf-pers').textContent = (state.mode === 'foto') ? '1 Persona (fotografo profesional)' : '2 Personas (fotografo y videografo)';
+  document.getElementById('pdf-pers').textContent = (state.mode === 'foto') ? '1 Persona (fotógrafo profesional)' : '2 Personas (fotógrafo y videógrafo)';
   document.getElementById('pdf-cant').textContent = state.exactH + ' horas';
-  document.getElementById('pdf-sub1').textContent = `$${state.price},00`;
-  document.getElementById('pdf-m-sub').textContent = `$${state.price},00`;
+  
+  // Seteo de desglose de precios en la tabla y pie
+  document.getElementById('pdf-sub1').textContent = `$${state.subtotal},00`;
+  document.getElementById('pdf-m-sub').textContent = `$${state.subtotal},00`;
+  document.getElementById('pdf-m-desc').textContent = `-$${state.discount},00`;
   document.getElementById('pdf-m-total').textContent = `$${state.price},00`;
 
   const bullets = (state.mode === 'foto') 
-    ? "Se realiza cobertura de fotos aprovechando cada momento del evento. Se captan momentos espontáneos, poses con invitados, ambiente y protocolo. Todo el material se entrega con revelado digital y corrección de color profesional."
-    : "Se realiza cobertura de fotos y video de forma simultánea. Incluye video recap dinámico para redes sociales y un video resumen de larga duración que documenta los hitos del evento (ceremonia, actividades, pastel, etc).";
+    ? "Se realiza cobertura de fotos aprovechando cada momento relevante del evento. Se captan momentos espontáneos, protocolo formal, fotos de mesa e interacciones. Todo el material digital se entrega editado con corrección de color profesional de autor."
+    : "Se realiza cobertura híbrida en alta definición. Incluye la captura ilimitada de fotografía fija junto con la grabación de clips de video para la manufactura de un Recap Corto Dinámico (formato vertical/horizontal de alto impacto) y un video extendido cronológico.";
   document.getElementById('pdf-bullets').textContent = bullets;
 
   const el = document.getElementById('pdf-render');
   el.style.display = 'block';
-  const opt = { margin: 0, filename: `Cotizacion_${n}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+  const opt = { margin: 0, filename: `Cotizacion_LemonFilmz_${n}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
   html2pdf().set(opt).from(el).save().then(() => el.style.display = 'none');
 }
 
 function sendW() {
   const n = document.getElementById('i-nom').value;
-  const msg = `¡Hola LemonFilmz! Soy ${n}. Acabo de cotizar un servicio de ${state.mode} para un evento de ${state.sub} por $${state.price}. ¿Tienen disponibilidad?`;
+  const msg = `¡Hola LemonFilmz! Soy ${n}. Acabo de cotizar un servicio de ${state.mode} para un evento de ${state.sub} por un valor final de $${state.price}. Quisiera verificar si tienen la fecha disponible en su agenda para confirmar.`;
   window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`);
 }
 </script>
