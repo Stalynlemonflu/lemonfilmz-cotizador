@@ -100,7 +100,6 @@
   .sum-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid var(--line); }
   .sum-total { font-weight: 700; font-size: 1.3rem; color: var(--black); border: none; padding-top: 6px; display: flex; justify-content: space-between; align-items: center; }
 
-  /* El clásico tag de ahorro orgánico */
   .ahorro-tag { background: #e6f4ea; color: #137333; font-size: 0.85rem; padding: 10px 14px; border-radius: 8px; font-weight: 600; text-align: center; margin-top: 10px; border: 1px dashed #137333; }
 
   .hidden { display: none !important; }
@@ -112,7 +111,7 @@
   .modal-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px; }
   .modal-grid img { width:100%; border-radius:10px; }
 
-  /* --- ESTILOS DEL PDF REPLICADO (Mantiene formalidad) --- */
+  /* --- ESTILOS DEL PDF REPLICADO --- */
   #pdf-render { width: 210mm; min-height: 297mm; background: #fff; position: relative; color: #333; font-family: 'Helvetica', sans-serif; display: none; }
   .p-header-bg { position: absolute; top:0; right:0; width: 40%; height: 160px; background: var(--accent); border-radius: 0 0 0 100px; z-index: 0; }
   .p-content { position: relative; z-index: 1; padding: 50px; }
@@ -362,6 +361,12 @@ function upH(v) { state.h = parseInt(v); document.getElementById('val-h').textCo
 
 function upUI() {
   const r = state.rates[state.mode];
+  
+  // Actualización dinámica de los textos de los botones de combo
+  document.getElementById('pr-exp').textContent = `$${r[1]}/h`;
+  document.getElementById('pr-std').textContent = `$${r.base}/h`;
+  document.getElementById('pr-prem').textContent = `$${r.base}/h`;
+
   let curH = 3;
   if(state.combo === 'express') curH = 1; 
   else if(state.combo === 'prem') curH = state.h;
@@ -373,7 +378,6 @@ function upUI() {
   state.discount = state.subtotal - state.price;
   state.exactH = curH;
 
-  // Textos súper orgánicos que conectan de verdad
   const inc = document.getElementById('inc-list');
   inc.innerHTML = (state.mode === 'foto') 
     ? '<li>Fotos ilimitadas (hacemos click hasta que no quede nadie en la pista)</li><li>Capturamos las lágrimas de tu mamá y las locuras de tus amigos</li><li>Posa si quieres, si no, te cazamos de forma espontánea</li><li>Todas las fotos editadas con estilo único listas para compartir</li>'
