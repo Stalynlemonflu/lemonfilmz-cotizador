@@ -347,4 +347,197 @@
     <div id="det-cumple" class="hidden">
       <p class="section-heading">Elige tu Combo de Cumpleaños</p>
       
-      <div
+      <div class="field-row" style="margin-bottom:1rem">
+        <span class="field-label">Modalidad</span>
+        <div class="chips">
+          <div class="chip on" id="mode-foto" onclick="setMode('foto')">Foto (1 cám)</div>
+          <div class="chip" id="mode-fotovideo" onclick="setMode('fotovideo')">Foto + Video (2 cám)</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:12px">
+        <div class="opt" id="combo-1" onclick="setCombo(1)">
+          <div class="opt-name">Combo Express</div>
+          <div class="opt-desc">1 Hora de cobertura</div>
+          <div class="opt-price" id="p-combo1">$80</div>
+        </div>
+        <div class="opt" id="combo-3" onclick="setCombo(3)">
+          <div class="badge-rec">RECOMENDADO</div>
+          <div class="opt-name">Combo Estándar</div>
+          <div class="opt-desc">3 Horas de cobertura</div>
+          <div class="opt-price" id="p-combo3">$180</div>
+        </div>
+        <div class="opt" id="combo-custom" onclick="setCombo('custom')" style="grid-column: span 2;">
+          <div class="opt-name">Combo Premium (Personalizado)</div>
+          <div class="opt-desc">Elige desde 4 hasta 12 horas</div>
+          <div class="opt-price" id="p-combo-custom">$60 / hora</div>
+        </div>
+      </div>
+
+      <div id="custom-slider" class="hidden" style="margin-top:20px; background:var(--accent-light); padding:15px; border-radius:12px;">
+        <div class="field-row" style="border:none">
+          <span class="field-label">Horas Totales</span>
+          <div class="slider-wrap">
+            <input type="range" min="4" max="12" value="4" id="range-hrs" oninput="updateRange(this.value)">
+            <span class="slider-val" id="val-hrs">4 h</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-box" id="cumple-sum"></div>
+      <button class="btn btn-primary" onclick="goStep(3)" style="margin-top:1.5rem">Continuar →</button>
+      <button class="btn btn-ghost" onclick="pickService('social')" style="margin-top:0.5rem">← Volver</button>
+    </div>
+
+    <div id="det-generic" class="hidden">
+      <p class="section-heading">Servicio en construcción...</p>
+      <button class="btn btn-ghost" onclick="goStep(1)">← Volver al inicio</button>
+    </div>
+
+  </div>
+
+  <div id="step3" class="hidden">
+    <p class="section-heading">Tus datos de contacto</p>
+    <input type="text" id="inp-nombre" placeholder="Nombre completo">
+    <input type="text" id="inp-evento" placeholder="¿Qué celebramos? (Ej: Cumpleaños de Luis)">
+    <input type="text" id="inp-fecha" placeholder="Fecha del evento">
+    <input type="email" id="inp-email" placeholder="Tu correo electrónico">
+    <input type="text" id="inp-tel" placeholder="WhatsApp">
+    <textarea id="inp-nota" placeholder="Notas adicionales (Opcional)"></textarea>
+    <button class="btn btn-primary" onclick="goStep(4)">Ver cotización final →</button>
+    <button class="btn btn-ghost" onclick="goStep(2)">← Volver</button>
+  </div>
+
+  <div id="step4" class="hidden">
+    <p class="section-heading">Resumen Final</p>
+    <div class="summary-box" id="final-summary"></div>
+    <button class="btn btn-wa" onclick="sendWA()">Contactar por WhatsApp</button>
+    <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1rem">Nueva cotización</button>
+  </div>
+
+</div>
+
+<script>
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-pzimIFn2GhiyUHVhc3hlA3kwyYQ9f-KBJE43aKV8jixrxq_uAY6pBQ/exec';
+const WA_NUMBER = '593995007148';
+
+const state = {
+  step: 1,
+  service: '',
+  subtype: '',
+  mode: 'foto', // foto, fotovideo
+  duration: 3,  // 1, 3, custom (4+)
+  price: 0,
+  details: ''
+};
+
+// TARIFAS CUMPLEAÑOS
+const RATES = {
+  foto: { 1: 80, 2: 140, base: 60 },
+  fotovideo: { 1: 100, 2: 180, base: 80 }
+};
+
+function goStep(n) {
+  state.step = n;
+  [1,2,3,4].forEach(i => {
+    document.getElementById('step'+i).classList.toggle('hidden', i !== n);
+    document.getElementById('pd'+i).className = 'prog-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    document.getElementById('pl'+i).className = 'prog-label' + (i === n ? ' active' : '');
+    if (i < n) document.getElementById('pd'+i).textContent = '✓';
+    else document.getElementById('pd'+i).textContent = i;
+  });
+  if(n === 4) renderFinal();
+}
+
+function pickService(s) {
+  state.service = s;
+  goStep(2);
+  document.getElementById('sub-social').classList.toggle('hidden', s !== 'social');
+  document.getElementById('det-marca').classList.toggle('hidden', s !== 'marca');
+}
+
+function pickSubtype(t) {
+  state.subtype = t;
+  document.getElementById('sub-social').classList.add('hidden');
+  if (t === 'cumple') {
+    document.getElementById('det-cumple').classList.remove('hidden');
+    updateCumpleUI();
+  } else {
+    document.getElementById('det-generic').classList.remove('hidden');
+  }
+}
+
+// LÓGICA CUMPLE
+function setMode(m) {
+  state.mode = m;
+  document.getElementById('mode-foto').classList.toggle('on', m === 'foto');
+  document.getElementById('mode-fotovideo').classList.toggle('on', m === 'fotovideo');
+  updateCumpleUI();
+}
+
+function setCombo(d) {
+  state.duration = d;
+  document.getElementById('combo-1').classList.toggle('selected', d === 1);
+  document.getElementById('combo-3').classList.toggle('selected', d === 3);
+  document.getElementById('combo-custom').classList.toggle('selected', d === 'custom');
+  document.getElementById('custom-slider').classList.toggle('hidden', d !== 'custom');
+  updateCumpleUI();
+}
+
+function updateRange(v) {
+  document.getElementById('val-hrs').textContent = v + ' h';
+  updateCumpleUI();
+}
+
+function updateCumpleUI() {
+  // Actualizar precios en tarjetas
+  document.getElementById('p-combo1').textContent = '$' + RATES[state.mode][1];
+  document.getElementById('p-combo3').textContent = '$' + (RATES[state.mode].base * 3);
+  document.getElementById('p-combo-custom').textContent = '$' + RATES[state.mode].base + ' / hora';
+
+  // Calcular precio actual
+  let hrs = state.duration === 'custom' ? parseInt(document.getElementById('range-hrs').value) : state.duration;
+  let total = 0;
+  
+  if (hrs === 1) total = RATES[state.mode][1];
+  else if (hrs === 2) total = RATES[state.mode][2];
+  else total = hrs * RATES[state.mode].base;
+
+  state.price = total;
+  state.details = `Cumpleaños: ${(state.mode === 'foto' ? 'Fotografía' : 'Foto + Video')} x ${hrs} horas.`;
+
+  document.getElementById('cumple-sum').innerHTML = `
+    <div class="sum-row"><span>Cobertura ${hrs}h (${state.mode})</span><span>$${total}</span></div>
+    <div class="sum-row sum-total"><span>Total Estimado</span><span class="amount">$${total}</span></div>
+  `;
+}
+
+function renderFinal() {
+  document.getElementById('final-summary').innerHTML = `
+    <div class="sum-row"><span>Servicio</span><span>${state.details}</span></div>
+    <div class="sum-row sum-total"><span>Inversión</span><span class="amount">$${state.price}</span></div>
+  `;
+  guardarDatos();
+}
+
+function guardarDatos() {
+  const payload = {
+    nombre: document.getElementById('inp-nombre').value,
+    evento: document.getElementById('inp-evento').value,
+    email: document.getElementById('inp-email').value,
+    telefono: document.getElementById('inp-tel').value,
+    detalle: state.details,
+    total: state.price
+  };
+  fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+}
+
+function sendWA() {
+  const name = document.getElementById('inp-nombre').value;
+  const msg = `¡Hola LemonFilmz! Soy ${name}. Acabo de cotizar un evento: ${state.details} por un total de $${state.price}. ¿Tienen disponibilidad?`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
+}
+</script>
+
+</body>
+</html>
