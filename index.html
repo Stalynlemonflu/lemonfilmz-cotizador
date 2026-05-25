@@ -6,6 +6,9 @@
 <title>Cotizador — LemonFilmz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -208,7 +211,6 @@
   .mode-btn.on .mode-indicator { border-color: var(--accent); background: var(--accent); }
   .mode-btn.on .mode-indicator::after { content:''; width: 6px; height: 6px; background:#fff; border-radius:50%; }
 
-  /* CAJA DE INCLUSIONES DINÁMICAS */
   .inclusion-box {
     background: #fafafa;
     border: 1px solid var(--line);
@@ -227,16 +229,18 @@
     font-size: 0.8rem;
     color: var(--accent);
     background: var(--accent-light);
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 6px;
     text-decoration: none;
     font-weight: 500;
-    margin-top: 6px;
+    margin-top: 8px;
     cursor: pointer;
     border: 1px solid transparent;
     transition: all 0.2s;
   }
   .portfolio-inline-btn:hover { border-color: var(--accent); }
+
+  .portfolio-hint-text { font-size: 0.75rem; color: var(--muted); margin-top: 6px; line-height: 1.3; }
 
   /* MODAL DEL PORTAFOLIO INTERNO */
   .modal-overlay {
@@ -295,10 +299,30 @@
 
   .geo-notice { font-size: 0.78rem; color: var(--muted); line-height: 1.4; margin: 1rem 0 0.5rem; padding: 10px 12px; background: #fffcee; border: 1px solid #fbe6a2; border-radius: 8px; display: flex; gap: 6px; }
   
-  .btn { width: 100%; padding: 13px; border: none; border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; margin-top: 8px; }
+  .btn { width: 100%; padding: 13px; border: none; border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.9; }
   .btn-primary { background: var(--black); color: #fff; }
   .btn-wa { background: var(--wa); color: #fff; }
+  .btn-pdf { background: #e06666; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-portfolio { background: var(--white); color: var(--black); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; }
   .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+
+  /* CAJA DE COPIADO RÁPIDO */
+  .copy-box-container { margin-top: 1.5rem; background: #fdfdfd; border: 1px dashed var(--faint); padding: 12px; border-radius: 8px; }
+  .copy-textarea { width: 100%; height: 110px; font-family: monospace; font-size: 0.78rem; background: #fafafa; padding: 8px; border: 1px solid var(--line); border-radius: 6px; resize: none; margin-bottom: 6px; color: #444; }
+
+  /* PLANTILLA EXCLUSIVA PARA EL PDF (Invisible en la web, solo se activa al exportar) */
+  #pdf-template { padding: 40px; background: #ffffff; color: #1e1e1c; font-family: 'Arial', sans-serif; }
+  .pdf-header { border-bottom: 2px solid #2a6b4a; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .pdf-title { font-size: 26px; font-weight: bold; color: #0f0f0e; }
+  .pdf-meta { text-align: right; font-size: 11px; color: #6b6b66; line-height: 1.4; }
+  .pdf-section { margin-bottom: 20px; }
+  .pdf-section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #2a6b4a; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #e4e4de; padding-bottom: 4px; }
+  .pdf-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .pdf-table th { background: #f7f7f4; text-align: left; padding: 8px; font-size: 12px; border: 1px solid #e4e4de; }
+  .pdf-table td { padding: 10px 8px; font-size: 12px; border: 1px solid #e4e4de; }
+  .pdf-total-row { font-size: 15px; font-weight: bold; color: #2a6b4a; text-align: right; padding-up: 15px; }
+  .pdf-footer { margin-top: 40px; font-size: 10px; color: #a8a8a2; text-align: center; border-top: 1px solid #e4e4de; padding-top: 15px; }
 
   .hidden { display: none !important; }
 
@@ -377,9 +401,9 @@
 
       <div class="inclusion-box">
         <div class="inclusion-title" id="inc-title">¿Qué incluye este servicio?</div>
-        <ul class="inclusion-list" id="inc-list">
-          </ul>
-        <div class="portfolio-inline-btn" onclick="openModal()">✨ Ver muestra de mi trabajo sin salir de la página</div>
+        <ul class="inclusion-list" id="inc-list"></ul>
+        <div class="portfolio-inline-btn" onclick="openModal()">📸 Ver muestra de fotos del estilo</div>
+        <p class="portfolio-hint-text">💡 <em>¿Quieres ver proyectos específicos? Al finalizar tu cotización podrás solicitar mi portafolio completo por WhatsApp.</em></p>
       </div>
 
       <p class="section-heading">2. Elige tu Combo de Cobertura</p>
@@ -464,8 +488,22 @@
   <div id="step4" class="hidden">
     <p class="section-heading">Resumen Final</p>
     <div class="summary-box" id="final-summary"></div>
-    <button class="btn btn-wa" onclick="sendWA()">Contactar por WhatsApp</button>
-    <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1rem">Nueva cotización</button>
+    
+    <button class="btn btn-wa" onclick="sendWA('agenda')">🚀 Agendar Evento por WhatsApp</button>
+    <button class="btn btn-portfolio" onclick="sendWA('portfolio')" style="margin-top:10px;">✨ Solicitar Portafolio Completo</button>
+    
+    <div style="margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top:1.5rem;">
+      <p style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;">🛠️ Herramientas de Administración</p>
+      <button class="btn btn-pdf" onclick="exportToPDF()">📋 Descargar Propuesta Comercial (PDF)</button>
+      
+      <div class="copy-box-container">
+        <span style="font-size: 0.75rem; font-weight: 500; color: var(--black); display:block; margin-bottom:4px;">Texto formateado para WhatsApp / Correo:</span>
+        <textarea id="copy-text-area" class="copy-textarea" readonly></textarea>
+        <button class="btn btn-ghost" onclick="copyToClipboard()" style="padding: 6px; font-size: 0.75rem; margin-top:0;">📋 Copiar texto al portapapeles</button>
+      </div>
+    </div>
+    
+    <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top: 2rem;">Nueva cotización</button>
   </div>
 
 </div>
@@ -473,16 +511,81 @@
 <div class="modal-overlay" id="portfolio-modal" onclick="closeModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeModalDirect()">✕</button>
-    <p class="section-heading" style="margin-bottom: 8px;">Galería de Muestra</p>
-    <p style="font-size: 0.85rem; color: var(--muted);">Un pequeño vistazo del estilo, color y calidad cinematográfica que entregamos en cada cobertura.</p>
-    
+    <p class="section-heading" style="margin-bottom: 8px;">Galería de Estilo</p>
+    <p style="font-size: 0.85rem; color: var(--muted);">Un vistazo rápido al manejo de luz, composición y color que imprimo en cada una de mis capturas.</p>
     <div class="modal-gallery">
       <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500" alt="Muestra 1">
       <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=500" alt="Muestra 2">
       <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=500" alt="Muestra 3">
       <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500" alt="Muestra 4">
     </div>
-    <button class="btn btn-primary" onclick="closeModalDirect()" style="margin-top: 15px;">Volver a la cotización</button>
+    <button class="btn btn-primary" onclick="closeModalDirect()" style="margin-top: 15px;">Volver al Cotizador</button>
+  </div>
+</div>
+
+<div id="pdf-template" style="display: none;">
+  <div class="pdf-header">
+    <div>
+      <div class="pdf-title">LemonFilmz</div>
+      <div style="font-size: 12px; color: #6b6b66; margin-top:2px;">Fotografía & Videografía Profesional</div>
+    </div>
+    <div class="pdf-meta">
+      <strong>PROPUESTA COMERCIAL</strong><br>
+      Lugar: Guayaquil, Ecuador<br>
+      Fecha de Emisión: <span id="pdf-current-date"></span><br>
+      Validez: 15 días calendario
+    </div>
+  </div>
+
+  <div class="pdf-section">
+    <div class="pdf-section-title">Información del Cliente & Evento</div>
+    <p style="font-size: 12px; line-height: 1.6;">
+      <strong>Cliente:</strong> <span id="pdf-client-name"></span><br>
+      <strong>Motivo / Evento:</strong> <span id="pdf-event-name"></span><br>
+      <strong>Fecha del Evento:</strong> <span id="pdf-event-date"></span><br>
+      <strong>Locación / Notas:</strong> <span id="pdf-event-location"></span>
+    </p>
+  </div>
+
+  <div class="pdf-section">
+    <div class="pdf-section-title">Detalle del Servicio Cotizado</div>
+    <table class="pdf-table">
+      <thead>
+        <tr>
+          <th>Descripción del Paquete</th>
+          <th style="width: 80px; text-align: center;">Horas</th>
+          <th style="width: 100px; text-align: right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong id="pdf-service-title"></strong><br>
+            <span id="pdf-service-bullets" style="font-size: 11px; color:#555; display:block; margin-top:4px; line-height: 1.4;"></span>
+          </td>
+          <td style="text-align: center;" id="pdf-service-hours"></td>
+          <td style="text-align: right; font-weight: bold;" id="pdf-service-cost"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pdf-total-row">
+    Inversión Total: <span id="pdf-grand-total" style="color: #2a6b4a; font-size:18px;"></span>
+  </div>
+
+  <div class="pdf-section" style="margin-top: 30px;">
+    <div class="pdf-section-title">Términos y Condiciones</div>
+    <ul style="font-size: 10px; color: #6b6b66; padding-left: 15px; line-height: 1.5;">
+      <li>Las tarifas cotizadas corresponden exclusivamente a coberturas dentro del perímetro urbano de Guayaquil.</li>
+      <li>Para separar y asegurar la fecha en agenda, se requiere un anticipo del 50%. El saldo restante se cancela el día del evento.</li>
+      <li>Los tiempos de entrega finales de material digital y edición cinematográfica se acordarán formalmente al agendar.</li>
+    </ul>
+  </div>
+
+  <div class="pdf-footer">
+    Contacto: +593 99 500 7148 · Guayaquil, Ecuador<br>
+    <em>Fotografía y Cine que capturan la esencia de tus mejores momentos.</em>
   </div>
 </div>
 
@@ -493,7 +596,7 @@ const WA_NUMBER = '593995007148';
 const state = {
   step: 1, service: '', subtype: '', mode: 'foto', 
   comboType: 'standard', expressHrs: 1, customHrs: 4,      
-  price: 0, details: '', exactHrs: 3
+  price: 0, details: '', exactHrs: 3, rateApplied: 50
 };
 
 const RATES = {
@@ -501,7 +604,6 @@ const RATES = {
   fotovideo: { 1: 90, 2: 80, base: 70 }
 };
 
-// TEXTOS EXPLICATIVOS PERSONALIZADOS SEGÚN LA MODALIDAD
 const INCLUSIONS = {
   foto: [
     "<strong>Fotografía ilimitada profesional:</strong> Aprovechamos cada segundo. Se registran todos los momentos espontáneos, poses creativas con tíos, primos y amigos, abrazos y risas, y no solo la típica foto familiar estructurada.",
@@ -577,7 +679,6 @@ function updateRange(v) {
 }
 
 function updateCumpleUI() {
-  // Renderizar las inclusiones dinámicas en la lista HTML
   const listContainer = document.getElementById('inc-list');
   listContainer.innerHTML = '';
   INCLUSIONS[state.mode].forEach(text => {
@@ -606,6 +707,7 @@ function updateCumpleUI() {
   }
 
   state.exactHrs = hrs;
+  state.rateApplied = ratePorHora;
   const totalCalculado = hrs * ratePorHora;
   const precioBaseUnaHora = RATES[state.mode][1]; 
   const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
@@ -634,7 +736,6 @@ function updateCumpleUI() {
   `;
 }
 
-// FUNCIONES PARA CONTROLAR LA VENTANA EMERGENTE (MODAL)
 function openModal() { document.getElementById('portfolio-modal').classList.add('open'); }
 function closeModalDirect() { document.getElementById('portfolio-modal').classList.remove('open'); }
 function closeModal(e) { if(e.target.id === 'portfolio-modal') closeModalDirect(); }
@@ -646,7 +747,82 @@ function renderFinal() {
     <div class="sum-row"><span>Fecha seleccionada</span><strong>${f_fecha}</strong></div>
     <div class="sum-row sum-total"><span>Inversión</span><span class="amount">$${state.price}</span></div>
   `;
+  
+  buildCopyText();
   guardarDatos();
+}
+
+// GENERA EL TEXTO FORMATEADO DENTRO DE LA CAJA DE HERRAMIENTAS
+function buildCopyText() {
+  const name = document.getElementById('inp-nombre').value || 'Cliente';
+  const eventName = document.getElementById('inp-evento').value || 'Cumpleaños';
+  const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
+  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil';
+  
+  const text = `✨ *COTIZACIÓN FORMAL — LEMONFILMZ* ✨\n\n` +
+               `👤 *Cliente:* ${name}\n` +
+               `🎉 *Evento:* ${eventName}\n` +
+               `📅 *Fecha:* ${eventDate}\n` +
+               `📍 *Locación/Notas:* ${eventLocation}\n\n` +
+               `⚙️ *Detalle del Paquete:* \n` +
+               `• ${state.details}\n` +
+               `• Tarifa aplicada: $${state.rateApplied}/hora\n` +
+               `• Incluye cobertura completa, fotos ilimitadas y revelado digital.\n\n` +
+               `💰 *Inversión Total:* $${state.price} USD\n\n` +
+               `📌 _Nota: Tarifas válidas para Guayaquil. Agenda reservada con el 50%._`;
+               
+  document.getElementById('copy-text-area').value = text;
+}
+
+function copyToClipboard() {
+  const textArea = document.getElementById('copy-text-area');
+  textArea.select();
+  document.execCommand('copy');
+  alert('¡Texto copiado con éxito! Ya puedes pegarlo en WhatsApp o Correo.');
+}
+
+// SÚPER FUNCIÓN: MONTA LOS DATOS EN EL TEMPLATE OCULTO Y SACA EL PDF
+function exportToPDF() {
+  const name = document.getElementById('inp-nombre').value || 'Cliente';
+  const eventName = document.getElementById('inp-evento').value || 'Cumpleaños';
+  const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
+  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil';
+  
+  // Rellenar campos del PDF invisible
+  document.getElementById('pdf-current-date').textContent = new Date().toLocaleDateString('es-EC');
+  document.getElementById('pdf-client-name').textContent = name;
+  document.getElementById('pdf-event-name').textContent = eventName;
+  document.getElementById('pdf-event-date').textContent = eventDate;
+  document.getElementById('pdf-event-location').textContent = eventLocation;
+  
+  const nombreModalidad = state.mode === 'foto' ? 'Solo Fotografía Profesional' : 'Combo Completo: Foto + Video';
+  document.getElementById('pdf-service-title').textContent = nombreModalidad;
+  document.getElementById('pdf-service-hours').textContent = `${state.exactHrs} h`;
+  document.getElementById('pdf-service-cost').textContent = `$${state.price} USD`;
+  document.getElementById('pdf-grand-total').textContent = `$${state.price} USD`;
+  
+  // Agregar viñetas cortas al PDF según modalidad
+  const bullets = state.mode === 'foto' 
+    ? "• Captura de fotos ilimitadas durante las horas contratadas.\n• Enfoque en momentos espontáneos y fotos grupales.\n• Revelado digital y corrección de color incluidos."
+    : "• Todo lo de fotografía.\n• Video Recap Corto de estilo cinematográfico (Highlight para Redes).\n• Video Resumen Extendido de larga duración documentando los hitos principales del evento.";
+  document.getElementById('pdf-service-bullets').innerText = bullets;
+
+  // Ejecutar conversión
+  const element = document.getElementById('pdf-template');
+  
+  // Clonamos momentáneamente el elemento para hacerlo visible a html2pdf pero mantenerlo oculto en la web
+  const opt = {
+    margin:       15,
+    filename:     `Cotizacion_LemonFilmz_${name.replace(/\s+/g, '_')}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  element.style.display = 'block'; // Mostrarlo un milisegundo para que la librería lo renderice
+  html2pdf().set(opt).from(element).save().then(() => {
+    element.style.display = 'none'; // Volverlo a ocultar de forma segura
+  });
 }
 
 function guardarDatos() {
@@ -666,13 +842,18 @@ function guardarDatos() {
   fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 }
 
-function sendWA() {
+function sendWA(actionType) {
   const name = document.getElementById('inp-nombre').value;
   const eventName = document.getElementById('inp-evento').value;
   const eventDate = document.getElementById('inp-fecha').value;
   const eventLocation = document.getElementById('inp-nota').value;
 
-  const msg = `¡Hola LemonFilmz! Soy ${name}.\n\nAcabo de realizar una cotización para un evento:\n📌 *Evento:* ${eventName}\n📅 *Fecha:* ${eventDate}\n⏱️ *Servicio:* ${state.details}\n📍 *Ubicación/Notas:* ${eventLocation}\n\n💰 *Total Estimado:* $${state.price} USD.\n\n¿Tienen disponibilidad en la agenda?`;
+  let msg = '';
+  if (actionType === 'agenda') {
+    msg = `¡Hola LemonFilmz! Soy ${name}.\n\nAcabo de realizar una cotización para un evento y me gustaría agendar:\n📌 *Evento:* ${eventName}\n📅 *Fecha:* ${eventDate}\n⏱️ *Servicio:* ${state.details}\n📍 *Ubicación/Notas:* ${eventLocation}\n\n💰 *Total Estimado:* $${state.price} USD.\n\n¿Me confirman disponibilidad por favor?`;
+  } else if (actionType === 'portfolio') {
+    msg = `¡Hola LemonFilmz! Soy ${name}. Acabo de terminar de cotizar mi evento (${eventName} para el día ${eventDate}) a través de su web. Me interesó mucho su propuesta, ¿podrían compartirme el enlace a su portafolio completo para ver más de su trabajo?`;
+  }
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 </script>
