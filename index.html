@@ -543,29 +543,25 @@
     </div>
 
     <table class="p-table">
-  <thead>
-    <tr>
-      <th style="width: 60%">Descripcion</th>
-      <th style="text-align: center;">Cantidad</th>
-      <th style="text-align: right;">Total Base</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <strong id="pdf-serv-tit">Cobertura boda 8 horas</strong><br>
-        <span id="pdf-pers" style="font-size: 11px; color:#666">1 Persona (fotógrafo profesional)</span><br><br>
-        
-        <div id="pdf-bullets" style="font-size: 11px; line-height: 1.5; color: #555; text-align: justify; padding-right: 15px;">
-          <ul id="pdf-bullets-list" style="margin: 0; padding-left: 15px; list-style-type: disc;"></ul>
-        </div>
-        
-      </td>
-      <td style="text-align: center; font-weight: bold; font-size: 14px;" id="pdf-cant">8 horas</td>
-      <td style="text-align: right; font-weight: bold; font-size: 14px;" id="pdf-sub1">$600,00</td>
-    </tr>
-  </tbody>
-</table>
+      <thead>
+        <tr>
+          <th style="width: 60%">Descripcion</th>
+          <th style="text-align: center;">Cantidad</th>
+          <th style="text-align: right;">Total Base</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong id="pdf-serv-tit">Cobertura boda 8 horas</strong><br>
+            <span id="pdf-pers" style="font-size: 11px; color:#666">1 Persona (fotógrafo profesional)</span><br><br>
+            <div id="pdf-bullets" style="font-size: 11px; line-height: 1.5; color: #555; text-align: justify; padding-right: 15px;"></div>
+          </td>
+          <td style="text-align: center; font-weight: bold; font-size: 14px;" id="pdf-cant">8 horas</td>
+          <td style="text-align: right; font-weight: bold; font-size: 14px;" id="pdf-sub1">$600,00</td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="p-footer-grid">
       <div class="p-notice-box">
@@ -743,24 +739,8 @@ function renderFinal() {
     <div class="sum-row"><span>Fecha seleccionada</span><strong>${f_fecha}</strong></div>
     <div class="sum-row sum-total"><span>Inversión</span><span class="amount">$${state.price}</span></div>
   `;
-  
-  // === NUEVO: Lógica para pintar las viñetas desglosadas en el PDF ===
-  const pdfListContainer = document.getElementById('pdf-bullets-list');
-  if (pdfListContainer) {
-    pdfListContainer.innerHTML = '';
-    
-    // Si es fotovideo combina foto + video (quitando el texto repetido), si no, solo foto
-    let bullets = state.mode === 'fotovideo' 
-      ? [...INCLUSIONS.foto, ...INCLUSIONS.fotovideo.slice(1)] 
-      : [...INCLUSIONS.foto];
-    
-    bullets.forEach(text => {
-      const li = document.createElement('li');
-      li.style.marginBottom = '6px';
-      li.innerHTML = text;
-      pdfListContainer.appendChild(li);
-    });
-  }
+  guardarDatos();
+}
 
 function guardarDatos() {
   let userTel = document.getElementById('inp-tel').value.replace(/\s+/g, '');
