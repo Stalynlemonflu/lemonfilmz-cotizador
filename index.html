@@ -720,88 +720,92 @@ function downloadPDF() {
   element.style.boxSizing = 'border-box';
 
   element.innerHTML = `
-    <div style="background-color: #71cb49; height: 160px; border-radius: 0 0 100% 0 / 0 0 40% 0; padding: 30px 40px; display: flex; justify-content: space-between; align-items: flex-start; box-sizing: border-box;">
-      <div style="color: #ffffff; margin-top: 10px;">
+    <div style="background-color: #71cb49; height: 175px; border-radius: 0 0 100% 0 / 0 0 40% 0; padding: 35px 45px; display: flex; justify-content: space-between; align-items: flex-start; box-sizing: border-box;">
+      <div style="color: #ffffff; margin-top: 5px;">
         <p style="font-size: 0.95rem; margin: 0; font-weight: 400; opacity: 0.9;">Cotizacion para</p>
-        <h1 style="font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: bold; margin: 2px 0 5px 0; color: #ffffff; letter-spacing: -0.02em;">${eventName}</h1>
-        <p style="font-size: 0.85rem; margin: 0; opacity: 0.95; font-weight: 500;">Guayaquil - Ecuador</p>
-        <p style="font-size: 0.85rem; margin: 3px 0 0 0; font-weight: bold;">Evento: ${eventDate}</p>
+        <h1 style="font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: bold; margin: 2px 0 5px 0; color: #ffffff; letter-spacing: -0.02em;">${eventName}</h1>
+        <p style="font-size: 0.9rem; margin: 0; opacity: 0.95; font-weight: 500;">Guayaquil - Ecuador</p>
+        <p style="font-size: 0.9rem; margin: 4px 0 0 0; font-weight: bold;">Evento: ${eventDate}</p>
       </div>
-      <div style="text-align: right; margin-top: 10px;">
-        <div style="font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: bold; color: #ffffff; border: 2px solid #ffffff; padding: 4px 15px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em;">
+      
+      <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; margin-top: 5px;">
+        <div style="position: relative; width: 110px; height: 60px; margin-bottom: 5px;">
+          <svg viewBox="0 0 100 55" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+            <path d="M 5 50 A 45 45 0 0 1 95 50 Z" stroke="white" stroke-width="4" fill="none"/>
+            <line x1="3" y1="50" x2="97" y2="50" stroke="white" stroke-width="4" />
+            <line x1="50" y1="50" x2="50" y2="10" stroke="white" stroke-width="2" />
+            <line x1="50" y1="50" x2="18" y2="28" stroke="white" stroke-width="2" />
+            <line x1="50" y1="50" x2="82" y2="28" stroke="white" stroke-width="2" />
+            <line x1="50" y1="50" x2="24" y2="42" stroke="white" stroke-width="2" />
+            <line x1="50" y1="50" x2="76" y2="42" stroke="white" stroke-width="2" />
+            <path d="M 88 50 C 88 54, 93 54, 93 50 C 93 47, 88 44, 88 44 C 88 44, 83 47, 83 50 C 83 54, 88 54, 88 50 Z" fill="white" transform="rotate(15 88 50) translate(0, 4) scale(0.7)"/>
+          </svg>
+        </div>
+        <div style="font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: bold; color: #ffffff; border: 2px solid #ffffff; padding: 3px 12px; border-radius: 3px; display: inline-block; letter-spacing: 0.03em; background-color: rgba(113, 203, 73, 0.5);">
           LemonFilm-Z
         </div>
       </div>
     </div>
 
-    <div style="padding: 40px 50px; box-sizing: border-box;">
+    <div style="padding: 50px 50px; box-sizing: border-box;">
       
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 50px; font-size: 0.88rem; line-height: 1.5;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 60px; font-size: 0.9rem; line-height: 1.6;">
         <thead>
-          <tr style="color: #2a6b4a; font-weight: bold; text-align: left;">
-            <th style="padding-bottom: 15px; width: 60%; font-weight: bold;">Descripcion</th>
-            <th style="padding-bottom: 15px; width: 20%; text-align: center; font-weight: bold;">Cantidad</th>
-            <th style="padding-bottom: 15px; width: 20%; text-align: right; font-weight: bold;">Total</th>
+          <tr style="color: #2a6b4a; font-weight: bold; text-align: left; border-bottom: 2px solid #71cb49;">
+            <th style="padding-bottom: 15px; width: 60%; font-weight: bold; font-size: 1rem;">Descripcion</th>
+            <th style="padding-bottom: 15px; width: 20%; text-align: center; font-weight: bold; font-size: 1rem;">Cantidad</th>
+            <th style="padding-bottom: 15px; width: 20%; text-align: right; font-weight: bold; font-size: 1rem;">Total</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="padding-top: 10px; vertical-align: top;">
-              <strong style="color: #0f0f0e; font-size: 0.95rem; display: block; margin-bottom: 5px;">Cobertura Cobertura ${state.exactHrs} horas</strong>
-              <span style="color: #6b6b66; display: block; margin-bottom: 12px; font-weight: 500;">Servicio: ${state.mode === 'foto' ? 'Solo Fotografía Profesional' : 'Combo Completo (Foto + Video)'}</span>
-              <div style="color: #1e1e1c; font-size: 0.85rem; padding-right: 20px;">
-                ${INCLUSIONS[state.mode].map(inc => `<p style="margin-bottom: 8px;">• ${inc.replace(/<\/?strong>/g, '')}</p>`).join('')}
-                ${eventLocation ? `<p style="margin-top: 12px; color: #6b6b66; font-style: italic;"><strong>Nota de Locación:</strong> ${eventLocation}</p>` : ''}
+            <td style="padding-top: 20px; vertical-align: top;">
+              <strong style="color: #0f0f0e; font-size: 1.05rem; display: block; margin-bottom: 6px;">Cobertura boda ${state.exactHrs} horas</strong>
+              <span style="color: #6b6b66; display: block; margin-bottom: 15px; font-weight: 500;">Servicio: ${state.mode === 'foto' ? 'Solo Fotografía Profesional' : 'Combo Completo (Foto + Video)'}</span>
+              <div style="color: #1e1e1c; font-size: 0.88rem; padding-right: 20px;">
+                ${INCLUSIONS[state.mode].map(inc => `<p style="margin-bottom: 10px; text-indent: -12px; padding-left: 12px;">• ${inc.replace(/<\/?strong>/g, '')}</p>`).join('')}
+                ${eventLocation ? `<p style="margin-top: 15px; color: #6b6b66; font-style: italic;"><strong>Nota de Locación:</strong> ${eventLocation}</p>` : ''}
               </div>
             </td>
-            <td style="padding-top: 10px; text-align: center; vertical-align: top; font-weight: 500; color: #0f0f0e;">
-              ${state.exactHrs} ${state.exactHrs === 1 ? 'hora' : 'horas'}
+            <td style="padding-top: 20px; text-align: center; vertical-align: top; font-weight: bold; color: #0f0f0e; font-size: 1rem;">
+              ${state.exactHrs} horas
             </td>
-            <td style="padding-top: 10px; text-align: right; vertical-align: top; font-weight: bold; color: #0f0f0e; font-size: 0.95rem;">
+            <td style="padding-top: 20px; text-align: right; vertical-align: top; font-weight: bold; color: #0f0f0e; font-size: 1.05rem;">
               $${subTotalOriginal.toFixed(2)}
             </td>
           </tr>
         </tbody>
       </table>
 
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 40px;">
-        
-        <div style="width: 50%; font-size: 0.82rem; color: #1e1e1c; line-height: 1.7;">
-          <h3 style="color: #2a6b4a; font-size: 0.95rem; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #e4e4de; padding-bottom: 4px; width: 80%;">Datos para el pago</h3>
-          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Nombre:</span> <strong style="font-weight:500;">Stalyn Andre Garcia Yagual</strong></p>
-          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Cedula:</span> <strong style="font-weight:500;">0954255634</strong></p>
-          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Correo:</span> <strong style="font-weight:500;">Lemonfilmz.contact@gmail.com</strong></p>
-          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Celular:</span> <strong style="font-weight:500;">+593 962878800</strong></p>
-          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">Tipo de cuenta:</span> <strong style="font-weight:500;">AHORROS Banco Guayaquil</strong></p>
-          <p style="margin: 3px 0;"><span style="color:#6b6b66; display:inline-block; width:90px;">#Cuenta:</span> <strong style="font-weight:500;">0047753290</strong></p>
+      <div style="display: flex; justify-content: flex-end; margin-top: 50px;">
+        <div style="width: 45%; font-size: 1.1rem; color: #0f0f0e;">
+          
+          <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 2px solid #1e1e1c; align-items: center;">
+            <span style="font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: bold;">Sub- Total:</span>
+            <span style="font-weight: bold; font-size: 1.2rem;">$${subTotalOriginal.toFixed(2)}</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 2px solid #1e1e1c; align-items: center;">
+            <span style="font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: bold;">Descuento:</span>
+            <span style="font-weight: bold; font-size: 1.2rem;">-$${ahorroTotal.toFixed(2)}</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; padding: 15px 0 0 0; align-items: center;">
+            <span style="font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: bold;">Total:</span>
+            <span style="font-family: 'Fraunces', serif; font-size: 1.9rem; font-weight: bold; color: #0f0f0e;">$${state.price.toFixed(2)}</span>
+          </div>
+          
         </div>
-
-        <div style="width: 45%; font-size: 1rem; color: #0f0f0e;">
-          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e4e4de; align-items: center;">
-            <span style="font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: bold;">Sub- Total:</span>
-            <span style="font-weight: bold; font-size: 1.1rem;">$${subTotalOriginal.toFixed(2)}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e4e4de; align-items: center; color: #c62828;">
-            <span style="font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: bold;">Descuento:</span>
-            <span style="font-weight: bold; font-size: 1.1rem;">-$${ahorroTotal.toFixed(2)}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 12px 0 0 0; align-items: center;">
-            <span style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: bold;">Total:</span>
-            <span style="font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: bold; color: #2a6b4a;">$${state.price.toFixed(2)}</span>
-          </div>
-        </div>
-
       </div>
 
-      <div style="margin-top: 80px; padding-top: 15px; border-top: 1px dashed #e4e4de; display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #a8a8a2;">
-        <div>📸 instagram: <span style="font-weight: 500; color: #6b6b66;">stalyn_lemonflu</span></div>
-        <div>Generado automáticamente via LemonFilmz App</div>
+      <div style="margin-top: 120px; padding-top: 20px; border-top: 1px solid #e4e4de; text-align: center; font-size: 0.8rem; color: #a8a8a2;">
+        <div>Generado automáticamente por LemonFilmz App</div>
       </div>
 
     </div>
   `;
 
-  // Opciones de renderizado perfectas para formato A4 de una sola hoja
+  // Opciones de PDF optimizadas
   const opt = {
     margin:       0,
     filename:     `Cotizacion_LemonFilmz_${name.replace(/\s+/g, '_')}.pdf`,
