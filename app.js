@@ -59,7 +59,7 @@ const INCLUSIONS = {
     ],
     fotovideo: [
       "<strong>Fotografía Documental Completa:</strong> Captura fotográfica ilimitada revelada en alta resolución.",
-      "<strong>Wedding Fine Highlight Film:</strong> Película corta de autor sumamente emotiva y artística, musicalizada con diseño sonoro fino, perfecta para revivir en redes y pantallas.",
+      "<strong>Wedding Fine  Film:</strong> Película corta de  sumamente emotiva y artística, musicalizada con diseño sonoro fino, perfecta para revivir en redes y pantallas.",
       "<strong>Película Documental de Bodas:</strong> Edición extendida cronológica que guarda de principio a fin los votos completos, las lecturas, el brindis de los padrinos y la locura del baile."
     ]
   }
