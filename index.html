@@ -93,67 +93,11 @@
 
       <p class="section-heading" id="cobertura-heading">2. Elige tu Combo de Cobertura</p>
       
-      <div class="grid-2" style="gap:12px" id="combos-tiempo-estandar">
-        <div class="opt" id="combo-express" onclick="setCombo('express')">
-          <div class="opt-name">Combo Express</div>
-          <div class="opt-desc">Cobertura corta (1 o 2 horas)</div>
-          <div class="opt-price" id="p-combo1">$70 / hora</div>
-        </div>
-        <div class="opt" id="combo-3" onclick="setCombo('standard')">
-          <div class="badge-rec">MEJOR VALOR</div>
-          <div class="opt-name">Combo Estándar ⭐</div>
-          <div class="opt-desc">3 Horas completas de evento</div>
-          <div class="opt-price" id="p-combo3">$50 / hora</div>
-        </div>
-        <div class="opt" id="combo-custom" onclick="setCombo('custom')" style="grid-column: span 2;">
-          <div class="opt-name">Combo Premium (Larga Duración)</div>
-          <div class="opt-desc">Para fiestas grandes (de 4 a 12 horas)</div>
-          <div class="opt-price" id="p-combo-custom">$50 / hora</div>
-        </div>
-      </div>
-
-      <div class="grid-2" style="gap:12px" id="combos-boda-civil">
-        <div class="opt" id="boda-c1" onclick="setBodaCombo('civil_solo')">
-          <div class="opt-name">Solo Registro Civil</div>
-          <div class="opt-desc">Cobertura en Juzgado / Despacho (1-2h)</div>
-        </div>
-        <div class="opt" id="boda-c2" onclick="setBodaCombo('civil_recep')">
-          <div class="badge-rec">RECOMENDADO</div>
-          <div class="opt-name">Registro Civil + Recepción</div>
-          <div class="opt-desc">Protocolo legal y festejo posterior</div>
-        </div>
-        <div class="opt" id="boda-c3" onclick="setBodaCombo('civil_todo_recep')" style="grid-column: span 2;">
-          <div class="opt-name">Todo en Recepción (5 Horas)</div>
-          <div class="opt-desc">Firma legal en el salón + fiesta extendida</div>
-        </div>
-      </div>
-
-      <div class="grid-2" style="gap:12px" id="combos-boda-ecle">
-        <div class="opt selected" style="grid-column: span 2; cursor: default;">
-          <div class="badge-rec">COBERTURA PREMIUM</div>
-          <div class="opt-name">Paquete Integral Religioso (8 Horas)</div>
-          <div class="opt-desc">Desde preparativos/iglesia hasta el final de la fiesta coreografiada.</div>
-        </div>
-      </div>
-
-      <div id="express-hours-selector" class="hidden selector-extra-box">
-        <div class="field-row" style="border:none; padding:0;">
-          <span class="field-label">Duración Express</span>
-          <div class="chips">
-            <div class="chip on" id="exp-h1" onclick="setExpressHours(1)">1 Hora de cobertura</div>
-            <div class="chip" id="exp-h2" onclick="setExpressHours(2)">2 Horas de cobertura</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="custom-slider" class="hidden slider-extra-box">
-        <div class="field-row" style="border:none; padding:0;">
-          <span class="field-label">Horas Totales</span>
-          <div class="slider-wrap">
-            <input type="range" min="4" max="12" value="4" id="range-hrs" oninput="updateRange(this.value)">
-            <span class="slider-val" id="val-hrs">4 h</span>
-          </div>
-        </div>
+      <div id="save-option" class="hidden" style="margin: 15px 0; padding: 10px; border: 1px dashed #2a6b4a; border-radius: 8px;">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+          <input type="checkbox" onchange="state.includeSaveTheDate = this.checked; updateCumpleUI();">
+          <span>Incluir <strong>Save the Date</strong> (+$70)</span>
+        </label>
       </div>
 
       <div class="summary-box">
@@ -171,59 +115,9 @@
     </div>
   </div>
 
-  <div id="step3" class="hidden">
-    <p class="section-heading">Tus datos de contacto</p>
-    <label class="input-label-text">Nombre completo</label>
-    <input type="text" id="inp-nombre" placeholder="Ej: Stalyn García">
-    <label class="input-label-text">¿Qué celebramos?</label>
-    <input type="text" id="inp-evento" placeholder="Ej: Cumpleaños de Luis">
-    <label class="input-label-text">Fecha del evento</label>
-    <input type="date" id="inp-fecha">
-    <label class="input-label-text">Correo electrónico</label>
-    <input type="email" id="inp-email" placeholder="ejemplo@correo.com">
-    <label class="input-label-text">Número de WhatsApp</label>
-    <div class="tel-container">
-      <span class="tel-prefix">🇪🇨 +593</span>
-      <input type="text" id="inp-tel" placeholder="995007148">
-    </div>
-    <label class="input-label-text">Locación y Notas adicionales</label>
-    <textarea id="inp-nota" placeholder="Por favor, redacte aquí dónde se llevará a cabo el evento (Local, casa, dirección) o cualquier requerimiento extra..."></textarea>
-    
-    <div class="geo-notice">
-      📍 <span><strong>Nota importante:</strong> Las tarifas mostradas aplican exclusivamente dentro de la ciudad de <strong>Guayaquil</strong>. Eventos en otras ciudades o provincias estarán sujetos a variaciones y recargos por viáticos/movilización.</span>
-    </div>
-    
-    <button class="btn btn-primary" onclick="goStep(4)" style="margin-top: 1rem;">Ver cotización final →</button>
-    <button class="btn btn-ghost" onclick="goStep(2)">← Volver</button>
-  </div>
+  <div id="step3" class="hidden">...</div>
+  <div id="step4" class="hidden">...</div>
 
-  <div id="step4" class="hidden">
-    <p class="section-heading">Resumen Final</p>
-    <div class="summary-box" id="final-summary"></div>
-    
-    <button class="btn btn-wa" onclick="sendWA('agenda')">🚀 Agendar Evento por WhatsApp</button>
-    <button class="btn btn-copy" id="btn-copiar" onclick="copiarCotizacion()">📋 Copiar Texto de Cotización</button>
-    <button class="btn btn-portfolio" onclick="sendWA('portfolio')" style="margin-top:10px;">✨ Solicitar Portafolio Completo</button>
-    
-    <button class="btn btn-ghost" onclick="goStep(1)" style="margin-top:1.5rem">Nueva cotización</button>
-  </div>
-
-</div>
-
-<div class="modal-overlay" id="portfolio-modal" onclick="closeModal(event)">
-  <div class="modal-card" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="closeModalDirect()">✕</button>
-    <p class="section-heading" style="margin-bottom: 8px;">Galería de Estilo</p>
-    <p style="font-size: 0.85rem; color: var(--muted);">Un vistazo rápido al manejo de luz, composición y color que imprimo en cada una de mis capturas.</p>
-    
-    <div class="modal-gallery">
-      <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500" alt="Muestra 1">
-      <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=500" alt="Muestra 2">
-      <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=500" alt="Muestra 3">
-      <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500" alt="Muestra 4">
-    </div>
-    <button class="btn btn-primary" onclick="closeModalDirect()" style="margin-top: 15px;">Volver al Cotizador</button>
-  </div>
 </div>
 
 <script src="app.js"></script>
