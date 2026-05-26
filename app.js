@@ -1,350 +1,361 @@
-*, *::before, *::after { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEFxV9NGQ17-pzimIFn2GhiyUHVhc3hlA3kwyYQ9f-KBJE43aKV8jixrxq_uAY6pBQ/exec';
+const WA_NUMBER = '593995007148';
+
+const state = {
+  step: 1, service: '', subtype: '', bodaTipo: '', mode: 'foto', 
+  comboType: 'standard', expressHrs: 1, customHrs: 4, bodaCombo: 'civil_solo',     
+  price: 0, details: '', exactHrs: 3, currentInclusions: []
+};
+
+// Matriz de Tarifas Exactas para cálculo por hora o paquete cerrado
+const RATES = {
+  cumple: {
+    foto: { 1: 70, 2: 60, base: 50 },
+    fotovideo: { 1: 90, 2: 80, base: 70 }
+  },
+  quince: {
+    foto: { 1: 80, 2: 70, base: 60 },
+    fotovideo: { 1: 100, 2: 90, base: 80 }
+  },
+  boda: {
+    civil_solo:       { hrs: 2, foto: 140, fotovideo: 180 },
+    civil_recep:      { hrs: 4, foto: 240, fotovideo: 320 },
+    civil_todo_recep: { hrs: 5, foto: 300, fotovideo: 400 },
+    ecle_completa:    { hrs: 8, foto: 480, fotovideo: 640 }
+  }
+};
+
+// Textos Publicitarios de Inclusión (Conservados idénticos)
+const INCLUSIONS = {
+  cumple: {
+    foto: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante. Se registran momentos espontáneos, poses creativas con invitados, protocolo, abrazos y emociones auténticas.",
+      "<strong>Entrega digital en alta definición:</strong> Revelado minucioso de todo el material con corrección de color y estilo profesional de autor.",
+      "<strong>Flexibilidad y Cobertura Total:</strong> El lente estará listo para capturar las interacciones y dinámicas familiares al ritmo que dicte tu evento."
+    ],
+    fotovideo: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura de cada segundo relevante con revelado digital de alta resolución.",
+      "<strong>Recap Cinematográfico Corto (Highlight):</strong> Video dinámico, estético y de alto impacto, editado en formato ideal para compartir en redes sociales (Reels/TikTok).",
+      "<strong>Video Resumen Extendido Documental:</strong> Cobertura audiovisual cronológica de larga duración que registra discursos, sorpresas y momentos clave sin perderse de nada."
+    ]
+  },
+  quince: {
+    foto: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura completa del protocolo (entrada, vals, cambio de zapatilla, brindis) capturando la esencia y elegancia de la quinceañera junto a su corte de honor e invitados.",
+      "<strong>Revelado y Corrección de Color Premium:</strong> Todo el material pasa por un revelado digital minucioso para resaltar tonos de piel, texturas del vestido y la iluminación del evento.",
+      "<strong>Garantía de Momentos Espontáneos:</strong> Además de las fotos formales y de mesas, registramos las risas, el baile y la energía de la fiesta de inicio a fin."
+    ],
+    fotovideo: [
+      "<strong>Fotografía ilimitada profesional:</strong> Cobertura total del protocolo y momentos clave con revelado digital en alta definición.",
+      "<strong>Quinceanera Highlight Reel:</strong> Un video resumen dinámico, moderno y cinematográfico con transiciones de alto impacto, perfecto para compartir en tus redes sociales.",
+      "<strong>Película Documental Extendida:</strong> Registro completo y cronológico en alta definición que preserva intactos los discursos, sorpresas, el vals familiar y toda la diversión de la pista de baile."
+    ]
+  },
+  boda: {
+    foto: [
+      "<strong>Fotografía de Bodas Documental y Artística:</strong> Cobertura de miradas, emociones reales y la complicidad de la pareja. Cero poses acartonadas, priorizamos la narrativa orgánica de su amor.",
+      "<strong>Revelado de Autor Fine-Art:</strong> Tratamiento de color atemporal de nivel cinematográfico, optimizando la iluminación, el blanco del vestido y la elegancia de los trajes.",
+      "<strong>Galería Intacta de Recuerdos:</strong> Registro detallado de firmas, anillos, lágrimas de los padres, abrazos de los amigos y la fiesta."
+    ],
+    fotovideo: [
+      "<strong>Fotografía Documental Completa:</strong> Captura fotográfica ilimitada revelada en alta resolución.",
+      "<strong>Wedding Fine Highlight Film:</strong> Película corta de autor sumamente emotiva y artística, musicalizada con diseño sonoro fino, perfecta para revivir en redes y pantallas.",
+      "<strong>Película Documental de Bodas:</strong> Edición extendida cronológica que guarda de principio a fin los votos completos, las lecturas, el brindis de los padrinos y la locura del baile."
+    ]
+  }
+};
+
+function goStep(n) {
+  state.step = n;
+  [1,2,3,4].forEach(i => {
+    document.getElementById('step'+i).classList.toggle('hidden', i !== n);
+    document.getElementById('pd'+i).className = 'prog-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    document.getElementById('pl'+i).className = 'prog-label' + (i === n ? ' active' : '');
+    if (i < n) document.getElementById('pd'+i).textContent = '✓';
+    else document.getElementById('pd'+i).textContent = i;
+  });
+  
+  if (n === 2 && state.service === 'social') {
+    regresarAEventos();
+  }
+  
+  if(n === 4) renderFinal();
 }
 
-:root {
-  --black: #0f0f0e;
-  --ink: #1e1e1c;
-  --muted: #6b6b66;
-  --faint: #a8a8a2;
-  --line: #e4e4de;
-  --surface: #f7f7f4;
-  --white: #ffffff;
-  --accent: #2a6b4a;
-  --accent-light: #e8f3ec;
-  --wa: #25d366;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --sale-green: #155724;
-  --sale-bg: #d4edda;
+function pickService(s) {
+  state.service = s;
+  state.subtype = ''; 
+  goStep(2);
+  
+  if (s === 'social') {
+    document.getElementById('sub-social').classList.remove('hidden');
+    document.getElementById('sub-boda-tipo').classList.add('hidden');
+    document.getElementById('det-cumple').classList.add('hidden');
+    document.getElementById('det-generic').classList.add('hidden');
+  } else {
+    document.getElementById('sub-social').classList.add('hidden');
+    document.getElementById('det-generic').classList.remove('hidden');
+  }
 }
 
-html { 
-  font-size: 16px; 
+function pickSubtype(t) {
+  state.subtype = t;
+  document.getElementById('sub-social').classList.add('hidden');
+  
+  if (t === 'boda') {
+    document.getElementById('sub-boda-tipo').classList.remove('hidden');
+  } else if (t === 'cumple' || t === 'quince') {
+    document.getElementById('det-cumple').classList.remove('hidden');
+    updateCumpleUI();
+  } else {
+    document.getElementById('det-generic').classList.remove('hidden');
+  }
 }
 
-body {
-  font-family: 'Instrument Sans', sans-serif;
-  background: var(--surface);
-  color: var(--ink);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem 1rem 4rem;
+function pickBodaTipo(tipo) {
+  state.bodaTipo = tipo;
+  document.getElementById('sub-boda-tipo').classList.add('hidden');
+  document.getElementById('det-cumple').classList.remove('hidden');
+  state.bodaCombo = (tipo === 'civil') ? 'civil_solo' : 'ecle_completa';
+  updateCumpleUI();
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-  animation: fadeUp .5s ease both;
+function regresarAEventos() {
+  document.getElementById('sub-social').classList.remove('hidden');
+  document.getElementById('sub-boda-tipo').classList.add('hidden');
+  document.getElementById('det-cumple').classList.add('hidden');
+  document.getElementById('det-generic').classList.add('hidden');
 }
 
-.logo {
-  font-family: 'Fraunces', serif;
-  font-size: 2.2rem;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  color: var(--black);
+function setMode(m) {
+  state.mode = m;
+  document.getElementById('m-btn-foto').classList.toggle('on', m === 'foto');
+  document.getElementById('m-btn-fotovideo').classList.toggle('on', m === 'fotovideo');
+  updateCumpleUI();
 }
 
-.logo em { 
-  font-style: italic; 
-  color: var(--accent); 
+function setCombo(type) {
+  state.comboType = type;
+  updateCumpleUI();
 }
 
-.logo-sub {
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-top: 4px;
+function setBodaCombo(bCombo) {
+  state.bodaCombo = bCombo;
+  updateCumpleUI();
 }
 
-.card {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  width: 100%;
-  max-width: 620px;
-  animation: fadeUp .4s ease both;
+function setExpressHours(h) {
+  state.expressHrs = h;
+  document.getElementById('exp-h1').classList.toggle('on', h === 1);
+  document.getElementById('exp-h2').classList.toggle('on', h === 2);
+  updateCumpleUI();
 }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+function updateRange(v) {
+  state.customHrs = parseInt(v);
+  document.getElementById('val-hrs').textContent = v + ' h';
+  updateCumpleUI();
 }
 
-.progress {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 2rem;
+function updateCumpleUI() {
+  const listContainer = document.getElementById('inc-list');
+  listContainer.innerHTML = '';
+  
+  const esBoda = (state.subtype === 'boda');
+  
+  // Ocultar selectores especiales por defecto
+  document.getElementById('combos-tiempo-estandar').classList.toggle('hidden', esBoda);
+  document.getElementById('express-hours-selector').classList.add('hidden');
+  document.getElementById('custom-slider').classList.add('hidden');
+  
+  document.getElementById('combos-boda-civil').classList.toggle('hidden', !esBoda || state.bodaTipo !== 'civil');
+  document.getElementById('combos-boda-ecle').classList.toggle('hidden', !esBoda || state.bodaTipo !== 'ecle');
+
+  let hrs = 3;
+  let totalCalculated = 0;
+  let ratePorHora = 0;
+  let esPrecioFijo = false;
+
+  if (esBoda) {
+    state.currentInclusions = INCLUSIONS.boda[state.mode];
+    if (state.bodaTipo === 'civil') {
+      const bSel = state.bodaCombo;
+      document.getElementById('boda-c1').classList.toggle('selected', bSel === 'civil_solo');
+      document.getElementById('boda-c2').classList.toggle('selected', bSel === 'civil_recep');
+      document.getElementById('boda-c3').classList.toggle('selected', bSel === 'civil_todo_recep');
+      
+      hrs = RATES.boda[bSel].hrs;
+      totalCalculated = RATES.boda[bSel][state.mode];
+    } else {
+      hrs = RATES.boda.ecle_completa.hrs;
+      totalCalculated = RATES.boda.ecle_completa[state.mode];
+    }
+    esPrecioFijo = true;
+    document.getElementById('cobertura-heading').textContent = "2. Configuración de Cobertura de Boda";
+  } else {
+    document.getElementById('cobertura-heading').textContent = "2. Elige tu Combo de Cobertura";
+    state.currentInclusions = INCLUSIONS[state.subtype][state.mode];
+    const eventRates = RATES[state.subtype];
+    
+    if (state.comboType === 'express') {
+      document.getElementById('express-hours-selector').classList.remove('hidden');
+      hrs = state.expressHrs;
+      ratePorHora = eventRates[state.mode][hrs];
+    } else if (state.comboType === 'custom') {
+      document.getElementById('custom-slider').classList.remove('hidden');
+      hrs = state.customHrs;
+      ratePorHora = eventRates[state.mode].base;
+    } else {
+      hrs = 3;
+      ratePorHora = eventRates[state.mode].base;
+    }
+    
+    totalCalculated = hrs * ratePorHora;
+
+    document.getElementById('combo-express').classList.toggle('selected', state.comboType === 'express');
+    document.getElementById('combo-3').classList.toggle('selected', state.comboType === 'standard');
+    document.getElementById('combo-custom').classList.toggle('selected', state.comboType === 'custom');
+    
+    document.getElementById('p-combo1').textContent = `$${eventRates[state.mode][state.expressHrs]} / hora`;
+    document.getElementById('p-combo3').textContent = `$${eventRates[state.mode].base} / hora`;
+    document.getElementById('p-combo-custom').textContent = `$${eventRates[state.mode].base} / hora`;
+  }
+
+  state.currentInclusions.forEach(text => {
+    const li = document.createElement('li');
+    li.innerHTML = text;
+    listContainer.appendChild(li);
+  });
+
+  state.exactHrs = hrs;
+  state.price = totalCalculated;
+  
+  let nombreResumenEvento = state.subtype === 'cumple' ? 'Cumpleaños' : 'Quinceañera';
+  if (esBoda) nombreResumenEvento = state.bodaTipo === 'civil' ? 'Boda Civil' : 'Boda Eclesiástica';
+  
+  const nombreModalidad = state.mode === 'foto' ? 'Solo Fotografía' : 'Foto + Video';
+  state.details = `${nombreResumenEvento}: ${nombreModalidad} x ${hrs} horas.`;
+
+  const discountArea = document.getElementById('discount-area');
+  if (!esBoda) {
+    const precioBaseUnaHora = RATES[state.subtype][state.mode][1]; 
+    const costoSiFueranHorasSueltas = hrs * precioBaseUnaHora;
+    const ahorroTotal = costoSiFueranHorasSueltas - totalCalculated;
+
+    if (ahorroTotal > 0) {
+      discountArea.innerHTML = `
+        <div class="discount-badge">
+          🏷️ ¡Excelente elección! Estás ahorrando <strong>$${ahorroTotal} USD</strong> con esta tarifa especial por volumen.
+        </div>
+      `;
+    } else {
+      discountArea.innerHTML = '';
+    }
+  } else {
+    discountArea.innerHTML = '';
+  }
+
+  const filaPrecioHTML = esPrecioFijo 
+    ? `<div class="sum-row"><span>Esquema de precios</span><span>Tarifa de Paquete Cerrado</span></div>`
+    : `<div class="sum-row"><span>Precio especial por hora</span><span>$${ratePorHora} / h</span></div>`;
+
+  document.getElementById('cumple-sum').innerHTML = `
+    <div class="sum-row"><span>Modalidad elegida</span><strong>${nombreModalidad}</strong></div>
+    ${filaPrecioHTML}
+    <div class="sum-row"><span>Tiempo de cobertura</span><span>${hrs} ${hrs === 1 ? 'hora' : 'horas'}</span></div>
+    <div class="sum-row sum-total"><span>Total Presupuesto</span><span class="amount">$${totalCalculated}</span></div>
+  `;
 }
 
-.prog-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  gap: 6px;
+function openModal() { document.getElementById('portfolio-modal').classList.add('open'); }
+function closeModalDirect() { document.getElementById('portfolio-modal').classList.remove('open'); }
+function closeModal(e) { if(e.target.id === 'portfolio-modal') closeModalDirect(); }
+
+function renderFinal() {
+  const f_fecha = document.getElementById('inp-fecha').value || 'Por definir';
+  document.getElementById('final-summary').innerHTML = `
+    <div class="sum-row"><span>Servicio</span><span>${state.details}</span></div>
+    <div class="sum-row"><span>Fecha seleccionada</span><strong>${f_fecha}</strong></div>
+    <div class="sum-row sum-total"><span>Inversión</span><span class="amount">$${state.price}</span></div>
+  `;
+  guardarDatos();
 }
 
-.prog-dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--faint);
-  background: var(--white);
-  transition: all .25s;
-  position: relative;
-  z-index: 1;
+function guardarDatos() {
+  let userTel = document.getElementById('inp-tel').value.replace(/\s+/g, '');
+  if(userTel.startsWith('0')) userTel = userTel.substring(1);
+
+  const payload = {
+    nombre: document.getElementById('inp-nombre').value,
+    evento: document.getElementById('inp-evento').value,
+    fecha: document.getElementById('inp-fecha').value,
+    email: document.getElementById('inp-email').value,
+    telefono: '+593' + userTel,
+    detalle: state.details,
+    nota: document.getElementById('inp-nota').value,
+    total: state.price
+  };
+  fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 }
 
-.prog-dot.active { border-color: var(--accent); color: var(--accent); }
-.prog-dot.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+function sendWA(actionType) {
+  const name = document.getElementById('inp-nombre').value;
+  const eventName = document.getElementById('inp-evento').value;
+  const eventDate = document.getElementById('inp-fecha').value;
+  const eventLocation = document.getElementById('inp-nota').value;
 
-.prog-label {
-  font-size: 10px;
-  color: var(--faint);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-align: center;
+  let msg = '';
+
+  if (actionType === 'agenda') {
+    msg = `¡Hola LemonFilmz! Soy ${name}.\n\nAcabo de realizar una cotización para un evento y me gustaría agendar:\n📌 *Evento:* ${eventName}\n📅 *Fecha:* ${eventDate}\n⏱️ *Servicio:* ${state.details}\n📍 *Ubicación/Notas:* ${eventLocation}\n\n💰 *Total Estimado:* $${state.price} USD.\n\n¿Me confirman disponibilidad por favor?`;
+  } else if (actionType === 'portfolio') {
+    msg = `¡Hola LemonFilmz! Soy ${name}. Acabo de terminar de cotizar mi evento (${eventName} para el día ${eventDate}) a través de su web. Me interesó mucho su propuesta, ¿podrían compartirme el enlace a su portafolio completo para ver más de su trabajo?`;
+  }
+  
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`);
 }
 
-.prog-label.active { 
-  color: var(--accent); 
-}
+function copiarCotizacion() {
+  const name = document.getElementById('inp-nombre').value || 'Cliente';
+  const eventName = document.getElementById('inp-evento').value || 'Por definir';
+  const eventDate = document.getElementById('inp-fecha').value || 'Por definir';
+  const eventLocation = document.getElementById('inp-nota').value || 'Guayaquil (Ecuador)';
+  
+  const descripcionesPlanas = state.currentInclusions.map(text => {
+    return "✨ " + text.replace(/<\/?strong>/g, '');
+  }).join("\n");
 
-.prog-line {
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-  margin-bottom: 22px;
-  margin-left: -2px;
-  margin-right: -2px;
-}
+  const textoCopiar = `📄 COTIZACIÓN DE SERVICIO AUDIOVISUAL — LEMONFILMZ
+--------------------------------------------------
+👤 Cliente: ${name}
+📌 Evento: ${eventName}
+📅 Fecha: ${eventDate}
+📍 Ubicación/Notas: ${eventLocation}
 
-.section-heading {
-  font-family: 'Fraunces', serif;
-  font-size: 1.3rem;
-  font-weight: 300;
-  color: var(--black);
-  margin-bottom: 1.25rem;
-  line-height: 1.3;
-}
+⚙️ DETALLE DEL SERVICIO:
+• Cobertura: ${state.details}
+• Tiempo exacto: ${state.exactHrs} ${state.exactHrs === 1 ? 'hora' : 'horas'}
 
-.grid-2 { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-  gap: 10px; 
-}
+📦 INCLUSIONES DETALLADAS:
+${descripcionesPlanas}
 
-.opt {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius);
-  padding: 1rem;
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-  text-align: left;
-  position: relative;
-}
+--------------------------------------------------
+💰 INVERSIÓN TOTAL: $${state.price}.00 USD
+--------------------------------------------------
+* Las tarifas aplican dentro de Guayaquil. Sujeto a cambios fuera de la ciudad.`;
 
-.opt:hover { border-color: #aaa; background: var(--surface); }
-.opt.selected { border-color: var(--accent); background: var(--accent-light); }
-
-.badge-rec {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 100px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.opt-name { font-size: 0.875rem; font-weight: 500; color: var(--black); margin-bottom: 3px; }
-.opt-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
-.opt-price { font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-top: 6px; }
-
-.field-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.mode-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.mode-btn {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  cursor: pointer;
-  background: var(--white);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all .15s;
-}
-.mode-btn:hover { border-color: #aaa; }
-.mode-btn.on { border-color: var(--accent); background: var(--accent-light); }
-.mode-btn-title { font-size: 0.9rem; font-weight: 500; color: var(--black); }
-.mode-btn-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-
-.mode-indicator { 
-  width: 16px; 
-  height: 16px; 
-  border-radius: 50%; 
-  border: 1.5px solid var(--line); 
-  background: #fff; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-}
-.mode-btn.on .mode-indicator { border-color: var(--accent); background: var(--accent); }
-.mode-btn.on .mode-indicator::after { content:''; width: 6px; height: 6px; background:#fff; border-radius:50%; }
-
-.inclusion-box {
-  background: #fafafa;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-bottom: 1.5rem;
-  animation: fadeIn 0.3s ease both;
-}
-.inclusion-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
-.inclusion-list { list-style: none; }
-.inclusion-list li { font-size: 0.85rem; color: var(--ink); line-height: 1.5; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; }
-.inclusion-list li::before { content: "✨"; font-size: 0.85rem; }
-
-.portfolio-inline-btn {
-  display: inline-block;
-  font-size: 0.8rem;
-  color: var(--accent);
-  background: var(--accent-light);
-  padding: 5px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  margin-top: 8px;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-}
-.portfolio-inline-btn:hover { border-color: var(--accent); }
-
-.portfolio-hint-text {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 6px;
-  line-height: 1.3;
-}
-
-/* MODAL DEL PORTAFOLIO INTERNO */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.modal-overlay.open { opacity: 1; pointer-events: auto; }
-
-.modal-card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 20px;
-  position: relative;
-  transform: scale(0.9);
-  transition: transform 0.3s ease;
-}
-.modal-overlay.open .modal-card { transform: scale(1); }
-
-.modal-close { 
-  position: absolute; 
-  top: 15px; right: 15px; 
-  background: var(--surface); 
-  border: none; 
-  width: 30px; height: 30px; 
-  border-radius: 50%; 
-  cursor: pointer; 
-  font-weight: bold; 
-}
-
-.modal-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-.modal-gallery img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; background: var(--surface); }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-
-.chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip { border: 1px solid var(--line); border-radius: 100px; padding: 5px 14px; font-size: 0.75rem; cursor: pointer; color: var(--muted); transition: all .15s; }
-.chip.on { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
-
-.slider-wrap { display: flex; align-items: center; gap: 10px; flex: 1; }
-input[type=range] { flex: 1; height: 4px; -webkit-appearance: none; background: var(--line); border-radius: 2px; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid #fff; }
-.slider-val { font-size: 0.875rem; font-weight: 500; color: var(--accent); min-width: 28px; text-align: right; }
-
-.summary-box { background: var(--surface); border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1.25rem; border: 1px solid var(--line); }
-.sum-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.8rem; color: var(--muted); padding: 6px 0; border-bottom: 1px solid var(--line); }
-.discount-badge { background: var(--sale-bg); color: var(--sale-green); font-size: 0.8rem; font-weight: 600; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.sum-total { font-size: 1rem; font-weight: 500; color: var(--black); padding-top: 10px; }
-.sum-total .amount { font-family: 'Fraunces', serif; font-size: 1.4rem; color: var(--accent); }
-
-.input-label-text { font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 4px; display: block; }
-input[type=text], input[type=email], input[type=date], textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; margin-bottom: 14px; outline: none; background: var(--white); }
-
-.tel-container { display: flex; align-items: center; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--white); margin-bottom: 14px; overflow: hidden; }
-.tel-prefix { background: var(--surface); padding: 10px 14px; font-size: 0.875rem; font-weight: 500; color: var(--ink); border-right: 1px solid var(--line); }
-.tel-container input { border: none; margin-bottom: 0; padding: 10px 14px; width: 100%; outline: none; font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; }
-
-.geo-notice { font-size: 0.78rem; color: var(--muted); line-height: 1.4; margin: 1rem 0 0.5rem; padding: 10px 12px; background: #fffcee; border: 1px solid #fbe6a2; border-radius: 8px; display: flex; gap: 6px; }
-
-.btn { width: 100%; padding: 13px; border: none; border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
-.btn-primary { background: var(--black); color: #fff; }
-.btn-wa { background: var(--wa); color: #fff; }
-.btn-portfolio { background: var(--white); color: var(--black); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; }
-.btn-portfolio:hover { background: var(--surface); border-color: #aaa; }
-.btn-copy { background: #555552; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.btn-copy:hover { background: var(--black); }
-.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
-
-/* Clases de Control de Interfaz Extra */
-.selector-extra-box { margin-top: 20px; background: var(--surface); border: 1px dashed var(--line); padding: 15px; border-radius: 12px; }
-.slider-extra-box { margin-top: 20px; background: var(--accent-light); padding: 15px; border-radius: 12px; }
-
-.hidden { display: none !important; }
-
-@media (max-width: 480px) {
-  .logo { font-size: 1.8rem; }
-  .card { padding: 1.5rem 1.25rem; }
+  navigator.clipboard.writeText(textoCopiar).then(() => {
+    const btn = document.getElementById('btn-copiar');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✅ ¡Copiado al Portapapeles!';
+    btn.style.background = '#2a6b4a';
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.background = '';
+    }, 2000);
+  }).catch(err => {
+    console.error('Error al copiar el texto: ', err);
+    alert('No se pudo copiar automáticamente. Por favor, selecciona el texto manualmente.');
+  });
 }
